@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>勤務カレンダー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3248;
+  --text: #e2e8f0;
+  --text-muted: #64748b;
+  --today-bg: #1e3a5f;
+  --today-border: #3b82f6;
+
+  --休: #ff6b6b;
+  --朝: #60a5fa;
+  --昼: #fbbf24;
+  --夜: #a78bfa;
+
+  --休-bg: rgba(255,107,107,0.12);
+  --朝-bg: rgba(96,165,250,0.12);
+  --昼-bg: rgba(251,191,36,0.12);
+  --夜-bg: rgba(167,139,250,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+header p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+}
+
+.ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctrl-group label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+}
+
+input[type="date"], select {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-family: 'DM Mono', monospace;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+input[type="date"]:focus, select:focus {
+  border-color: #3b82f6;
+}
+
+select {
+  cursor: pointer;
+  padding-right: 28px;
+}
+
+button {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 22px;
+  font-size: 0.85rem;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover { background: #2563eb; }
+button:active { transform: scale(0.97); }
+
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.calendar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.month {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  width: 340px;
+}
+
+.month h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 4px 0 10px;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+
+thead th:first-child { color: #ff6b6b44; }
+thead th:last-child  { color: #60a5fa44; }
+
+tbody td {
+  padding: 3px;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 8px;
+}
+
+.cell-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 5px 2px;
+  transition: background 0.15s;
+  min-height: 44px;
+}
+
+.cell-inner:hover {
+  background: var(--surface2);
+}
+
+.day-num {
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.day-shift {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+  padding: 1px 5px;
+  line-height: 1.4;
+}
+
+.s休 { color: var(--休); background: var(--休-bg); }
+.s朝 { color: var(--朝); background: var(--朝-bg); }
+.s昼 { color: var(--昼); background: var(--昼-bg); }
+.s夜 { color: var(--夜); background: var(--夜-bg); }
+
+.today .cell-inner {
+  background: var(--today-bg);
+  box-shadow: 0 0 0 2px var(--today-border);
+}
+
+.today .day-num { color: #93c5fd; font-weight: 700; }
+
+.sun .day-num { color: #ff6b6b88; }
+.sat .day-num { color: #60a5fa88; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>カレンダー</h1>
+  <p>SHIFT SCHEDULE</p>
+</header>
+
+<div class="controls">
+
+  <div class="ctrl-group">
+    <label>班</label>
+    <select id="teamSelect">
+      <option value="A">A班</option>
+      <option value="B">B班</option>
+      <option value="C">C班</option>
+      <option value="D">D班</option>
+    </select>
+  </div>
+
+  <div class="ctrl-group">
+    <label>基準日（1日目の朝）</label>
+    <input type="date" id="baseDate">
+  </div>
+
+  <div class="ctrl-group">
+    <label>表示月数</label>
+    <select id="monthsToShow">
+      <option>1</option><option selected>2</option><option>3</option>
+      <option>4</option><option>5</option><option>6</option>
+      <option>7</option><option>8</option><option>9</option>
+      <option>10</option><option>11</option><option>12</option>
+    </select>
+  </div>
+
+  <button id="renderBtn">表示</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--昼)"></div>午后勤 15:00 ～ 22:45</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
+</div>
+
+<div id="calendar" class="calendar"></div>
+
+<script>
+(() => {
+  const cycle = ['朝','朝','昼','昼','夜','夜','休','休',];
+
+  const teamBaseDates = {
+    A: "2026-04-02",
+    B: "2026-04-08",
+    C: "2026-04-06",
+    D: "2026-04-04"
+  };
+
+  const baseInput = document.getElementById('baseDate');
+  const monthsSelect = document.getElementById('monthsToShow');
+  const teamSelect = document.getElementById('teamSelect');
+  const btn = document.getElementById('renderBtn');
+  const container = document.getElementById('calendar');
+  const today = new Date();
+
+  const savedTeam = localStorage.getItem("shiftTeam");
+  if (savedTeam && teamBaseDates[savedTeam]) {
+    teamSelect.value = savedTeam;
+    baseInput.value = teamBaseDates[savedTeam];
+  } else {
+    baseInput.value = teamBaseDates["A"];
+  }
+
+  teamSelect.onchange = () => {
+    const t = teamSelect.value;
+    baseInput.value = teamBaseDates[t];
+    localStorage.setItem("shiftTeam", t);
+  };
+
+  function diffDays(a, b) {
+    return Math.floor(
+      (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
+       Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000
+    );
+  }
+
+  function render() {
+    container.innerHTML = '';
+
+    const base = new Date(baseInput.value + 'T00:00');
+    const months = parseInt(monthsSelect.value, 10);
+
+    for (let m = 0; m < months; m++) {
+      const y = today.getFullYear();
+      const mo = today.getMonth() + m;
+      const first = new Date(y, mo, 1);
+      const last = new Date(y, mo + 1, 0);
+
+      const box = document.createElement('div');
+      box.className = 'month';
+      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth() + 1}月</h3>`;
+
+      const table = document.createElement('table');
+      table.innerHTML = '<thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead>';
+      const tbody = document.createElement('tbody');
+      let tr = document.createElement('tr');
+
+      for (let i = 0; i < first.getDay(); i++) tr.appendChild(document.createElement('td'));
+
+      for (let d = 1; d <= last.getDate(); d++) {
+        if (tr.children.length === 7) {
+          tbody.appendChild(tr);
+          tr = document.createElement('tr');
+        }
+        const cur = new Date(y, mo, d);
+        const idx = ((diffDays(base, cur) % 8) + 8) % 8;
+        const s = cycle[idx];
+        const dow = cur.getDay();
+
+        const td = document.createElement('td');
+        if (cur.toDateString() === today.toDateString()) td.classList.add('today');
+        if (dow === 0) td.classList.add('sun');
+        if (dow === 6) td.classList.add('sat');
+
+        td.innerHTML = `
+          <div class="cell-inner">
+            <span class="day-num">${d}</span>
+            <span class="day-shift s${s}">${s}</span>
+          </div>`;
+        tr.appendChild(td);
+      }
+
+      while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
+      tbody.appendChild(tr);
+
+      table.appendChild(tbody);
+      box.appendChild(table);
+      container.appendChild(box);
+    }
+  }
+
+  btn.onclick = render;
+  render();
+})();
+</script>
+</body>
+</html>
