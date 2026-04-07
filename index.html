@@ -19,12 +19,12 @@
 
   --休: #ff6b6b;
   --朝: #60a5fa;
-  --后: #fbbf24;
+  --昼: #fbbf24;
   --夜: #a78bfa;
 
   --休-bg: rgba(255,107,107,0.12);
   --朝-bg: rgba(96,165,250,0.12);
-  --后-bg: rgba(251,191,36,0.12);
+  --昼-bg: rgba(251,191,36,0.12);
   --夜-bg: rgba(167,139,250,0.12);
 }
 
@@ -231,7 +231,7 @@ tbody td {
 
 .s休 { color: var(--休); background: var(--休-bg); }
 .s朝 { color: var(--朝); background: var(--朝-bg); }
-.s后 { color: var(--后); background: var(--后-bg); }
+.s昼 { color: var(--昼); background: var(--昼-bg); }
 .s夜 { color: var(--夜); background: var(--夜-bg); }
 
 .today .cell-inner {
@@ -250,7 +250,7 @@ tbody td {
 
 <header>
   <h1>カレンダー</h1>
-  <p>SCHEDULE</p>
+  <p>SHIFT SCHEDULE</p>
 </header>
 
 <div class="controls">
@@ -281,13 +281,12 @@ tbody td {
   </div>
 
   <button id="renderBtn">表示</button>
-  <button id="renderAllBtn">全班表示</button>
 </div>
 
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 15:00 ～ 22:45</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--昼)"></div>午后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
 </div>
 
@@ -295,7 +294,7 @@ tbody td {
 
 <script>
 (() => {
-  const cycle = ['朝','朝','后','后','夜','夜','休','休'];
+  const cycle = ['朝','朝','昼','昼','夜','夜','休','休',];
 
   const teamBaseDates = {
     A: "2026-04-02",
@@ -308,7 +307,6 @@ tbody td {
   const monthsSelect = document.getElementById('monthsToShow');
   const teamSelect = document.getElementById('teamSelect');
   const btn = document.getElementById('renderBtn');
-  const btnAll = document.getElementById('renderAllBtn');
   const container = document.getElementById('calendar');
   const today = new Date();
 
@@ -331,12 +329,6 @@ tbody td {
       (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
        Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000
     );
-  }
-
-  function getShiftForTeam(team, date) {
-    const base = new Date(teamBaseDates[team] + 'T00:00');
-    const idx = ((diffDays(base, date) % 8) + 8) % 8;
-    return cycle[idx];
   }
 
   function render() {
@@ -394,69 +386,7 @@ tbody td {
     }
   }
 
-  function renderAllTeams() {
-    container.innerHTML = '';
-
-    const months = parseInt(monthsSelect.value, 10);
-
-    for (let m = 0; m < months; m++) {
-      const y = today.getFullYear();
-      const mo = today.getMonth() + m;
-      const first = new Date(y, mo, 1);
-      const last = new Date(y, mo + 1, 0);
-
-      const box = document.createElement('div');
-      box.className = 'month';
-      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth() + 1}月</h3>`;
-
-      const table = document.createElement('table');
-      table.innerHTML = '<thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead>';
-      const tbody = document.createElement('tbody');
-      let tr = document.createElement('tr');
-
-      for (let i = 0; i < first.getDay(); i++) tr.appendChild(document.createElement('td'));
-
-      for (let d = 1; d <= last.getDate(); d++) {
-        if (tr.children.length === 7) {
-          tbody.appendChild(tr);
-          tr = document.createElement('tr');
-        }
-
-        const cur = new Date(y, mo, d);
-        const dow = cur.getDay();
-
-        const td = document.createElement('td');
-        if (cur.toDateString() === today.toDateString()) td.classList.add('today');
-        if (dow === 0) td.classList.add('sun');
-        if (dow === 6) td.classList.add('sat');
-
-        const sA = getShiftForTeam("A", cur);
-        const sB = getShiftForTeam("B", cur);
-        const sC = getShiftForTeam("C", cur);
-
-        td.innerHTML = `
-          <div class="cell-inner">
-            <span class="day-num">${d}</span>
-            <span class="day-shift s${sA}">朝 ${sA} A班</span>
-            <span class="day-shift s${sB}">后 ${sB} B班</span>
-            <span class="day-shift s${sC}">夜 ${sC} C班</span>
-          </div>
-        `;
-        tr.appendChild(td);
-      }
-
-      while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
-      tbody.appendChild(tr);
-
-      table.appendChild(tbody);
-      box.appendChild(table);
-      container.appendChild(box);
-    }
-  }
-
   btn.onclick = render;
-  btnAll.onclick = renderAllTeams;
-
   render();
 })();
 </script>
