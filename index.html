@@ -252,10 +252,9 @@ tbody td {
   flex-direction: column;
   align-items: center;
   border-radius: 8px;
-  padding: 5px 2px;
+  padding: 4px 2px;
   transition: background 0.15s;
-  min-height: 56px;
-  gap: 3px;
+  gap: 0;
 }
 
 .cell-all:hover { background: var(--surface2); }
@@ -265,38 +264,34 @@ tbody td {
   font-family: 'DM Mono', monospace;
   color: var(--text);
   line-height: 1;
-  margin-bottom: 1px;
+  margin-bottom: 3px;
 }
 
-.team-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  justify-content: center;
+.shift-row {
   width: 100%;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
 }
 
-.team-chip {
+.shift-badge {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  border-radius: 5px;
-  padding: 2px 5px;
-  font-size: 0.62rem;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.64rem;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.4;
   white-space: nowrap;
 }
 
-.chip-team {
-  font-size: 0.58rem;
-  font-weight: 500;
-  opacity: 0.8;
-}
-
-.chip-shift {
-  font-size: 0.65rem;
-}
+.row-朝 .shift-badge { color: var(--朝); background: var(--朝-bg); }
+.row-昼 .shift-badge { color: var(--昼); background: var(--昼-bg); }
+.row-夜 .shift-badge { color: var(--夜); background: var(--夜-bg); }
 
 .s休 { color: var(--休); background: var(--休-bg); }
 .s朝 { color: var(--朝); background: var(--朝-bg); }
@@ -464,8 +459,6 @@ tbody td {
   }
 
   function renderAllTeams(months) {
-    const shiftLabel = { '朝': '朝', '昼': '后', '夜': '夜' };
-
     for (let m = 0; m < months; m++) {
       const first = new Date(startYear, startMonth + m, 1);
       const last  = new Date(startYear, startMonth + m + 1, 0);
@@ -495,21 +488,23 @@ tbody td {
         if (dow === 0) td.classList.add('sun');
         if (dow === 6) td.classList.add('sat');
 
-        let chipsHtml = '';
+        const rows = { 朝: [], 昼: [], 夜: [] };
         for (const t of teams) {
           const s = getShift(t, cur);
-          if (s === '休') continue;
-          chipsHtml += `
-            <span class="team-chip s${s}">
-              <span class="chip-team">${t}</span>
-              <span class="chip-shift">${shiftLabel[s]}</span>
-            </span>`;
+          if (s !== '休') rows[s].push(t);
         }
+
+        const makeRow = (shift) => {
+          const badges = rows[shift].map(t => `<span class="shift-badge">${t}</span>`).join('');
+          return `<div class="shift-row row-${shift}">${badges}</div>`;
+        };
 
         td.innerHTML = `
           <div class="cell-all">
             <span class="all-day-num">${d}</span>
-            <div class="team-chips">${chipsHtml}</div>
+            ${makeRow('朝')}
+            ${makeRow('昼')}
+            ${makeRow('夜')}
           </div>`;
         tr.appendChild(td);
       }
