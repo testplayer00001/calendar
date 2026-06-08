@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>勤務カレンダー</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg: #0f1117;
@@ -16,735 +15,154 @@
   --text-muted: #64748b;
   --today-bg: #1e3a5f;
   --today-border: #3b82f6;
-
   --休: #ff6b6b;
   --朝: #60a5fa;
   --昼: #fbbf24;
   --夜: #a78bfa;
-
   --休-bg: rgba(255,107,107,0.12);
   --朝-bg: rgba(96,165,250,0.12);
   --昼-bg: rgba(251,191,36,0.12);
   --夜-bg: rgba(167,139,250,0.12);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding: 32px 20px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-header h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fff;
-  margin-bottom: 6px;
-}
-
-header p {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  max-width: 760px;
-  margin: 0 auto 32px;
-}
-
-.ctrl-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.ctrl-group label {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-  letter-spacing: 0.05em;
-}
-
-select {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-family: 'DM Mono', monospace;
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-
+body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 80px 20px 32px; -webkit-tap-highlight-color: transparent; }
+header { text-align: center; margin-bottom: 40px; }
+header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: 0.1em; color: #fff; margin-bottom: 8px; }
+header p { font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.05em; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 24px; max-width: 760px; margin: 0 auto 32px; }
+.ctrl-group { display: flex; align-items: center; gap: 8px; }
+.ctrl-group label { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.05em; }
+select { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; -webkit-appearance: none; cursor: pointer; }
 select:focus { border-color: #3b82f6; }
 select:focus:not(:focus-visible) { border-color: var(--border); outline: none; }
-
-.month-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-btn {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
+.month-nav { display: flex; align-items: center; gap: 8px; }
+.nav-btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s; flex-shrink: 0; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .nav-btn:hover { background: #2e3248; border-color: #3b82f6; }
-.nav-btn:focus-visible { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.4); }
 .nav-btn:focus:not(:focus-visible) { outline: none; box-shadow: none; border-color: var(--border); }
-.nav-btn:active { background: #2e3248; outline: none; box-shadow: none; }
-
-.month-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.9rem;
-  color: var(--text);
-  min-width: 90px;
-  text-align: center;
-  letter-spacing: 0.05em;
-}
-
-.today-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--surface2);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.78rem;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-  white-space: nowrap;
-  letter-spacing: 0.05em;
-}
+.nav-btn:active, .nav-btn:focus { outline: none; box-shadow: none; border-color: var(--border); }
+.nav-btn:focus-visible { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.4); }
+.month-label { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--text); min-width: 90px; text-align: center; letter-spacing: 0.05em; }
+.today-btn { display: flex; align-items: center; gap: 5px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; white-space: nowrap; letter-spacing: 0.05em; }
 .today-btn:hover { background: #2e3248; border-color: #3b82f6; color: #93c5fd; }
 .today-btn:focus:not(:focus-visible) { outline: none; }
-
-.print-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #1e3a5f;
-  color: #93c5fd;
-  border: 1px solid #3b82f6;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.82rem;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s, border-color 0.2s;
-  white-space: nowrap;
-}
+.print-btn { display: flex; align-items: center; gap: 6px; background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
 .print-btn:hover { background: #1e4a7f; }
 .print-btn:focus:not(:focus-visible) { outline: none; box-shadow: none; }
-
-.news-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #1a2a1a;
-  color: #86efac;
-  border: 1px solid #22c55e;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.82rem;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
+.news-btn { position: relative; display: flex; align-items: center; gap: 6px; background: #1a2a1a; color: #86efac; border: 1px solid #22c55e; border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
 .news-btn:hover { background: #1e3a1e; }
 .news-btn:focus:not(:focus-visible) { outline: none; }
-
-.news-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.6rem;
-  font-weight: 700;
-  font-family: 'DM Mono', monospace;
-  border-radius: 99px;
-  padding: 1px 5px;
-  min-width: 16px;
-  text-align: center;
-  line-height: 1.4;
-  pointer-events: none;
-}
+.news-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 99px; padding: 1px 5px; min-width: 16px; text-align: center; line-height: 1.4; pointer-events: none; }
 .news-badge.hidden { display: none; }
-
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px 32px;
-  width: min(420px, 92vw);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.modal h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
-.modal-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.modal-row label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  min-width: 60px;
-}
-
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 32px; width: min(420px, 92vw); display: flex; flex-direction: column; gap: 20px; }
+.modal h2 { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.08em; text-align: center; }
+.modal-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.modal-row label { font-size: 0.8rem; color: var(--text-muted); min-width: 60px; }
 .modal select { flex: 1; min-width: 80px; }
-
-.modal-btns {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.btn-cancel {
-  background: var(--surface2);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 0.85rem;
-  font-family: 'Noto Sans JP', sans-serif;
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s;
-}
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-cancel { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
 .btn-cancel:hover { background: #2e3248; }
 .btn-cancel:focus:not(:focus-visible) { outline: none; }
-
-.btn-print {
-  background: #1e3a5f;
-  color: #93c5fd;
-  border: 1px solid #3b82f6;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 0.85rem;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s;
-}
+.btn-print { background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
 .btn-print:hover { background: #1e4a7f; }
 .btn-print:focus:not(:focus-visible) { outline: none; }
-
-.news-modal {
-  width: min(520px, 94vw);
-  gap: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.news-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 28px 18px;
-  border-bottom: 1px solid var(--border);
-}
-
-.news-modal-header h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #86efac;
-  letter-spacing: 0.1em;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.news-modal-header h2::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 6px #22c55e;
-}
-
-.news-close-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  outline: none;
-  transition: color 0.2s, background 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 1;
-}
+.news-modal { width: min(520px, 94vw); gap: 0; padding: 0; overflow: hidden; }
+.news-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 28px 18px; border-bottom: 1px solid var(--border); }
+.news-modal-header h2 { font-size: 1rem; font-weight: 700; color: #86efac; letter-spacing: 0.1em; text-align: left; display: flex; align-items: center; gap: 8px; }
+.news-modal-header h2::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.news-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; outline: none; transition: color 0.2s, background 0.2s; -webkit-tap-highlight-color: transparent; line-height: 1; }
 .news-close-btn:hover { color: var(--text); background: var(--surface2); }
 .news-close-btn:focus:not(:focus-visible) { outline: none; }
-
-.news-list {
-  padding: 16px 28px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
+.news-list { padding: 16px 28px 24px; display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; }
 .news-list::-webkit-scrollbar { width: 4px; }
 .news-list::-webkit-scrollbar-track { background: transparent; }
 .news-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-.news-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 14px 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  border-left: 3px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.news-item.type-update  { border-left-color: #3b82f6; }
-.news-item.type-fix     { border-left-color: #22c55e; }
-.news-item.type-notice  { border-left-color: #fbbf24; }
-.news-item.type-maint   { border-left-color: #a78bfa; }
-
-.news-item-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.news-item-date {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-}
-
-.news-item-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 4px;
-  padding: 1px 7px;
-  letter-spacing: 0.05em;
-  line-height: 1.6;
-}
-
+.news-item { display: flex; flex-direction: column; gap: 5px; padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; border-left: 3px solid transparent; transition: border-color 0.2s; }
+.news-item.type-update { border-left-color: #3b82f6; }
+.news-item.type-fix    { border-left-color: #22c55e; }
+.news-item.type-notice { border-left-color: #fbbf24; }
+.news-item.type-maint  { border-left-color: #a78bfa; }
+.news-item-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.news-item-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em; }
+.news-item-tag { font-size: 0.65rem; font-weight: 700; border-radius: 4px; padding: 1px 7px; letter-spacing: 0.05em; line-height: 1.6; }
 .tag-update { background: rgba(59,130,246,0.15); color: #60a5fa; }
 .tag-fix    { background: rgba(34,197,94,0.15);  color: #86efac; }
 .tag-notice { background: rgba(251,191,36,0.15); color: #fbbf24; }
 .tag-maint  { background: rgba(167,139,250,0.15); color: #c4b5fd; }
-
-.news-item-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.4;
-}
-
-.news-item-body {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
+.news-item-title { font-size: 0.85rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.news-item-body  { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
 @media print {
   body > *:not(#printWrap) { display: none !important; }
-
-  #printWrap {
-    display: block !important;
-    background: #fff;
-    color: #111;
-    font-family: 'Noto Sans JP', sans-serif;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  #printWrap .print-title {
-    text-align: center;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #111;
-    margin: 0 0 5px;
-    letter-spacing: 0.08em;
-  }
-
-  #printWrap .print-legend {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-  }
-
-  #printWrap .print-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.65rem;
-    color: #555;
-  }
-
-  #printWrap .print-legend-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  #printWrap table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-  }
-
-  #printWrap thead th {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #444;
-    padding: 5px 2px;
-    text-align: center;
-    border: 1px solid #ccc;
-    background: #f0f0f0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
+  #printWrap { display: block !important; background: #fff; color: #111; font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 0; width: 100%; height: 100%; }
+  #printWrap .print-title { text-align: center; font-size: 1.05rem; font-weight: 700; color: #111; margin: 0 0 5px; letter-spacing: 0.08em; }
+  #printWrap .print-legend { display: flex; gap: 14px; justify-content: center; margin-bottom: 6px; flex-wrap: wrap; }
+  #printWrap .print-legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.65rem; color: #555; }
+  #printWrap .print-legend-dot { width: 7px; height: 7px; border-radius: 50%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printWrap table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  #printWrap thead th { font-size: 0.72rem; font-weight: 700; color: #444; padding: 5px 2px; text-align: center; border: 1px solid #ccc; background: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #printWrap thead th:first-child { color: #c0392b; }
   #printWrap thead th:last-child  { color: #2980b9; }
-
-  #printWrap tbody td {
-    padding: 2px 1px;
-    text-align: center;
-    vertical-align: middle;
-    border: 1px solid #ccc;
-    width: calc(100% / 7);
-  }
-
-  #printWrap.orient-portrait tbody tr  { height: 35mm; }
+  #printWrap tbody td { padding: 2px 1px; text-align: center; vertical-align: middle; border: 1px solid #ccc; width: calc(100% / 7); }
+  #printWrap.orient-portrait  tbody tr { height: 35mm; }
   #printWrap.orient-landscape tbody tr { height: 22mm; }
-
-  #printWrap .p-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3px 1px;
-    gap: 2px;
-    height: 100%;
-  }
-
-  #printWrap .p-day {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #111;
-    line-height: 1;
-    margin-bottom: 3px;
-  }
-
+  #printWrap .p-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 1px; gap: 2px; height: 100%; }
+  #printWrap .p-day { font-size: 0.95rem; font-weight: 700; color: #111; line-height: 1; margin-bottom: 3px; }
   #printWrap .p-day.sun     { color: #c0392b; }
   #printWrap .p-day.holiday { color: #c0392b; }
   #printWrap .p-day.sat     { color: #2980b9; }
-
-  #printWrap .p-shift-row {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  #printWrap .p-badge {
-    font-size: 0.62rem;
-    font-weight: 700;
-    border-radius: 3px;
-    padding: 1px 4px;
-    line-height: 1.5;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
+  #printWrap .p-shift-row { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; }
+  #printWrap .p-badge { font-size: 0.62rem; font-weight: 700; border-radius: 3px; padding: 1px 4px; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #printWrap .p-badge.b朝 { color: #1d4ed8; background: #dbeafe; }
   #printWrap .p-badge.b昼 { color: #92400e; background: #fef3c7; }
   #printWrap .p-badge.b夜 { color: #5b21b6; background: #ede9fe; }
   #printWrap .p-badge.b休 { color: #991b1b; background: #fee2e2; }
-
-  #printWrap .p-holiday-name {
-    font-size: 0.48rem;
-    color: #c0392b;
-    line-height: 1.2;
-    text-align: center;
-    max-width: 100%;
-    overflow: hidden;
-  }
+  #printWrap .p-holiday-name { font-size: 0.48rem; color: #c0392b; line-height: 1.2; text-align: center; max-width: 100%; overflow: hidden; }
 }
-
 #printWrap { display: none; }
-
-.holi .day-num,
-.holi .all-day-num { color: rgba(255,107,107,0.8) !important; }
-
-.legend {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.calendar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 24px;
-}
-
-.month {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-}
-
+.holi .day-num, .holi .all-day-num { color: rgba(255,107,107,0.8) !important; }
+.legend { display: flex; gap: 20px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.calendar { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+.month { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
 .month.single-team { width: 340px; }
 .month.all-team { width: 520px; }
-
-@media (max-width: 560px) {
-  .month.all-team { width: 100%; }
-}
-
-.month h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #fff;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
+@media (max-width: 560px) { .month.all-team { width: 100%; } }
+.month h3 { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em; color: #fff; margin-bottom: 16px; text-align: center; }
 table { width: 100%; border-collapse: collapse; }
-
-thead th {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  padding: 4px 0 10px;
-  text-align: center;
-  letter-spacing: 0.06em;
-}
-
+thead th { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); padding: 4px 0 10px; text-align: center; letter-spacing: 0.06em; }
 thead th:first-child { color: rgba(255,107,107,0.4); }
 thead th:last-child  { color: rgba(96,165,250,0.4); }
-
 tbody td { padding: 3px; text-align: center; vertical-align: middle; }
-
-.cell-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  padding: 5px 2px;
-  transition: background 0.15s;
-  min-height: 44px;
-}
-
+.cell-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; padding: 5px 2px; transition: background 0.15s; min-height: 44px; }
 .cell-inner:hover { background: var(--surface2); }
-
-.day-num {
-  font-size: 0.82rem;
-  font-family: 'DM Mono', monospace;
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 3px;
-}
-
-.day-shift {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  border-radius: 4px;
-  padding: 1px 5px;
-  line-height: 1.4;
-}
-
-.cell-all {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 8px;
-  padding: 4px 2px;
-  transition: background 0.15s;
-  gap: 0;
-}
-
+.day-num { font-size: 0.82rem; font-family: 'DM Mono', monospace; font-weight: 400; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.day-shift { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; border-radius: 4px; padding: 1px 5px; line-height: 1.4; }
+.cell-all { display: flex; flex-direction: column; align-items: center; border-radius: 8px; padding: 4px 2px; transition: background 0.15s; gap: 0; }
 .cell-all:hover { background: var(--surface2); }
-
-.all-day-num {
-  font-size: 0.78rem;
-  font-family: 'DM Mono', monospace;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 3px;
-}
-
-.shift-row {
-  width: 100%;
-  min-height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  flex-wrap: wrap;
-}
-
-.shift-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-size: 0.64rem;
-  font-weight: 700;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
+.all-day-num { font-size: 0.78rem; font-family: 'DM Mono', monospace; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.shift-row { width: 100%; min-height: 20px; display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; }
+.shift-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 1px 5px; font-size: 0.64rem; font-weight: 700; line-height: 1.4; white-space: nowrap; }
 .row-朝 .shift-badge { color: var(--朝); background: var(--朝-bg); }
 .row-昼 .shift-badge { color: var(--昼); background: var(--昼-bg); }
 .row-夜 .shift-badge { color: var(--夜); background: var(--夜-bg); }
-
 .s休 { color: var(--休); background: var(--休-bg); }
 .s朝 { color: var(--朝); background: var(--朝-bg); }
 .s昼 { color: var(--昼); background: var(--昼-bg); }
 .s夜 { color: var(--夜); background: var(--夜-bg); }
-
-.today .cell-inner,
-.today .cell-all {
-  background: var(--today-bg);
-  box-shadow: 0 0 0 2px var(--today-border);
-}
-
-.today .day-num,
-.today .all-day-num { color: #93c5fd; font-weight: 700; }
-
-.sun .day-num,
-.sun .all-day-num { color: rgba(255,107,107,0.55); }
-.sat .day-num,
-.sat .all-day-num { color: rgba(96,165,250,0.55); }
+.today .cell-inner, .today .cell-all { background: var(--today-bg); box-shadow: 0 0 0 2px var(--today-border); }
+.today .day-num, .today .all-day-num { color: #93c5fd; font-weight: 700; }
+.sun .day-num, .sun .all-day-num { color: rgba(255,107,107,0.55); }
+.sat .day-num, .sat .all-day-num { color: rgba(96,165,250,0.55); }
 </style>
 </head>
-
 <body>
-
 <header>
   <h1>カレンダー</h1>
   <p>SHIFT SCHEDULE</p>
 </header>
-
 <div class="controls">
-
   <div class="ctrl-group">
     <label>班</label>
     <select id="teamSelect">
@@ -755,7 +173,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <option value="ALL">全班</option>
     </select>
   </div>
-
   <div class="ctrl-group">
     <label>表示月数</label>
     <select id="monthsToShow">
@@ -765,40 +182,32 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <option>10</option><option>11</option><option>12</option>
     </select>
   </div>
-
   <div class="ctrl-group month-nav">
     <label>開始月</label>
     <button class="nav-btn" id="prevMonth">&#8249;</button>
     <span class="month-label" id="monthLabel"></span>
     <button class="nav-btn" id="nextMonth">&#8250;</button>
   </div>
-
   <div class="ctrl-group">
     <button class="today-btn" id="goToday">今月</button>
   </div>
-
   <div class="ctrl-group">
     <button class="print-btn" id="openPrintModal">印刷</button>
   </div>
-
   <div class="ctrl-group">
     <button class="news-btn" id="openNewsModal">
       お知らせ
       <span class="news-badge" id="newsBadge"></span>
     </button>
   </div>
-
 </div>
-
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--昼)"></div>午后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
 </div>
-
 <div id="calendar" class="calendar"></div>
-
 <div class="modal-overlay" id="printModal">
   <div class="modal">
     <h2>印刷する月を選択</h2>
@@ -816,6 +225,15 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       </select>
     </div>
     <div class="modal-row">
+      <label>用紙</label>
+      <select id="printSize">
+        <option value="A4">A4</option>
+        <option value="A3">A3</option>
+        <option value="B4">B4</option>
+        <option value="B5">B5</option>
+      </select>
+    </div>
+    <div class="modal-row">
       <label>向き</label>
       <select id="printOrientation">
         <option value="landscape">横向き</option>
@@ -828,7 +246,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="newsModal">
   <div class="modal news-modal">
     <div class="news-modal-header">
@@ -838,38 +255,22 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="news-list" id="newsList"></div>
   </div>
 </div>
-
 <div id="printWrap" style="display:none"></div>
-
 <script>
 (() => {
   const NEWS_DATA = [
     {
-      date:  "2026-06-08",
-      type:  "update",
+      date:  "2026-04-09",
+      type:  "notice",
       title: "カレンダー公開",
-      body:  "各班のシフトの確認ができます。"
+      body:  "A・B・C・D班のシフトカレンダーを公開しました。"
     },
   ];
- 
-  const TYPE_LABEL = {
-    update: "機能追加",
-    fix:    "修正",
-    notice: "お知らせ",
-    maint:  "メンテナンス"
-  };
 
+  const TYPE_LABEL = { update:"機能追加", fix:"修正", notice:"お知らせ", maint:"メンテナンス" };
   const cycle = ['朝','朝','昼','昼','夜','夜','休','休'];
-
-  const teamBaseDates = {
-    A: "2026-04-02",
-    B: "2026-04-08",
-    C: "2026-04-06",
-    D: "2026-04-04"
-  };
-
+  const teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
   const teams = ['A','B','C','D'];
-
   const HOLIDAYS = {
     "2025-01-01":"元日","2025-01-13":"成人の日","2025-02-11":"建国記念の日",
     "2025-02-23":"天皇誕生日","2025-02-24":"振替休日","2025-03-20":"春分の日",
@@ -939,51 +340,32 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const newsList       = document.getElementById('newsList');
 
   const today = new Date();
-
   let startYear  = today.getFullYear();
   let startMonth = today.getMonth();
 
   for (let y = today.getFullYear() - 1; y <= today.getFullYear() + 1; y++) {
     const o = document.createElement('option');
-    o.value = y;
-    o.textContent = y + '年';
+    o.value = y; o.textContent = y + '年';
     if (y === today.getFullYear()) o.selected = true;
     printYearSel.appendChild(o);
   }
   printMonthSel.value = today.getMonth();
 
   const savedTeam = localStorage.getItem("shiftTeam");
-  if (savedTeam && (teamBaseDates[savedTeam] || savedTeam === "ALL")) {
-    teamSelect.value = savedTeam;
-  }
+  if (savedTeam && (teamBaseDates[savedTeam] || savedTeam === "ALL")) teamSelect.value = savedTeam;
 
   const STORAGE_KEY_NEWS = "shiftNewsRead";
-
-  function getReadDate() {
-    return localStorage.getItem(STORAGE_KEY_NEWS) || null;
-  }
-
-  function markAllRead() {
-    const latest = NEWS_DATA[0]?.date || "";
-    localStorage.setItem(STORAGE_KEY_NEWS, latest);
-  }
-
+  function getReadDate() { return localStorage.getItem(STORAGE_KEY_NEWS) || null; }
+  function markAllRead() { localStorage.setItem(STORAGE_KEY_NEWS, NEWS_DATA[0]?.date || ""); }
   function countUnread() {
-    const readDate = getReadDate();
-    if (!readDate) return NEWS_DATA.length;
-    return NEWS_DATA.filter(n => n.date > readDate).length;
+    const r = getReadDate();
+    return r ? NEWS_DATA.filter(n => n.date > r).length : NEWS_DATA.length;
   }
-
   function updateBadge() {
     const n = countUnread();
-    if (n > 0) {
-      newsBadge.textContent = n;
-      newsBadge.classList.remove('hidden');
-    } else {
-      newsBadge.classList.add('hidden');
-    }
+    if (n > 0) { newsBadge.textContent = n; newsBadge.classList.remove('hidden'); }
+    else newsBadge.classList.add('hidden');
   }
-
   function buildNewsList() {
     const readDate = getReadDate();
     newsList.innerHTML = '';
@@ -991,107 +373,65 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       const isNew = !readDate || item.date > readDate;
       const div = document.createElement('div');
       div.className = `news-item type-${item.type}`;
-
-      const tagLabel = TYPE_LABEL[item.type] || item.type;
-      const dateStr  = item.date.replace(/-/g, '/');
-
       div.innerHTML = `
         <div class="news-item-meta">
-          <span class="news-item-date">${dateStr}</span>
-          <span class="news-item-tag tag-${item.type}">${tagLabel}</span>
+          <span class="news-item-date">${item.date.replace(/-/g,'/')}</span>
+          <span class="news-item-tag tag-${item.type}">${TYPE_LABEL[item.type] || item.type}</span>
           ${isNew ? '<span class="news-item-tag tag-notice">NEW</span>' : ''}
         </div>
         <div class="news-item-title">${item.title}</div>
-        ${item.body ? `<div class="news-item-body">${item.body}</div>` : ''}
-      `;
+        ${item.body ? `<div class="news-item-body">${item.body}</div>` : ''}`;
       newsList.appendChild(div);
     });
   }
 
-  openNewsBtn.addEventListener('click', () => {
-    buildNewsList();
-    newsModal.classList.add('open');
-    markAllRead();
-    updateBadge();
-  });
+  openNewsBtn.addEventListener('click', () => { buildNewsList(); newsModal.classList.add('open'); markAllRead(); updateBadge(); });
+  closeNewsBtn.addEventListener('click', () => newsModal.classList.remove('open'));
+  newsModal.addEventListener('click', e => { if (e.target === newsModal) newsModal.classList.remove('open'); });
+  [openNewsBtn, closeNewsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  closeNewsBtn.addEventListener('click', () => {
-    newsModal.classList.remove('open');
-  });
-
-  newsModal.addEventListener('click', (e) => {
-    if (e.target === newsModal) newsModal.classList.remove('open');
-  });
-
-  [openNewsBtn, closeNewsBtn].forEach(btn => {
-    btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
-  });
-
-  goTodayBtn.addEventListener('click', () => {
-    startYear  = today.getFullYear();
-    startMonth = today.getMonth();
-    render();
-    setTimeout(() => goTodayBtn.blur(), 100);
-  });
-
+  goTodayBtn.addEventListener('click', () => { startYear = today.getFullYear(); startMonth = today.getMonth(); render(); setTimeout(() => goTodayBtn.blur(), 100); });
   [prevBtn, nextBtn].forEach(btn => {
-    btn.addEventListener('pointerup', () => {
-      setTimeout(() => btn.blur(), 100);
-    });
+    btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); btn.click(); btn.blur(); });
   });
 
-  function updateMonthLabel() {
-    monthLabel.textContent = `${startYear}年 ${startMonth + 1}月`;
-  }
+  function updateMonthLabel() { monthLabel.textContent = `${startYear}年 ${startMonth + 1}月`; }
 
   function diffDays(a, b) {
-    return Math.floor(
-      (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
-       Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000
-    );
+    return Math.floor((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate()) - Date.UTC(a.getFullYear(),a.getMonth(),a.getDate())) / 86400000);
   }
-
   function getShift(teamKey, date) {
     const base = new Date(teamBaseDates[teamKey] + 'T00:00');
-    const idx = ((diffDays(base, date) % 8) + 8) % 8;
-    return cycle[idx];
+    return cycle[((diffDays(base, date) % 8) + 8) % 8];
   }
 
   function renderSingleTeam(team, months) {
     for (let m = 0; m < months; m++) {
       const first = new Date(startYear, startMonth + m, 1);
       const last  = new Date(startYear, startMonth + m + 1, 0);
-
       const box = document.createElement('div');
       box.className = 'month single-team';
-      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth() + 1}月</h3>`;
-
+      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth()+1}月</h3>`;
       const table = document.createElement('table');
       table.innerHTML = '<thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead>';
       const tbody = document.createElement('tbody');
       let tr = document.createElement('tr');
-
       for (let i = 0; i < first.getDay(); i++) tr.appendChild(document.createElement('td'));
-
       for (let d = 1; d <= last.getDate(); d++) {
         if (tr.children.length === 7) { tbody.appendChild(tr); tr = document.createElement('tr'); }
-        const cur  = new Date(first.getFullYear(), first.getMonth(), d);
-        const s    = getShift(team, cur);
-        const dow  = cur.getDay();
-        const holi = holidayName(cur);
-        const td   = document.createElement('td');
+        const cur = new Date(first.getFullYear(), first.getMonth(), d);
+        const s = getShift(team, cur); const dow = cur.getDay(); const holi = holidayName(cur);
+        const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
         if (dow === 6) td.classList.add('sat');
-        if (holi)      td.classList.add('holi');
+        if (holi) td.classList.add('holi');
         td.innerHTML = `<div class="cell-inner"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span></div>`;
         tr.appendChild(td);
       }
       while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
-      tbody.appendChild(tr);
-      table.appendChild(tbody);
-      box.appendChild(table);
-      container.appendChild(box);
+      tbody.appendChild(tr); table.appendChild(tbody); box.appendChild(table); container.appendChild(box);
     }
   }
 
@@ -1099,53 +439,38 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     for (let m = 0; m < months; m++) {
       const first = new Date(startYear, startMonth + m, 1);
       const last  = new Date(startYear, startMonth + m + 1, 0);
-
       const box = document.createElement('div');
       box.className = 'month all-team';
-      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth() + 1}月</h3>`;
-
+      box.innerHTML = `<h3>${first.getFullYear()}年 ${first.getMonth()+1}月</h3>`;
       const table = document.createElement('table');
       table.innerHTML = '<thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead>';
       const tbody = document.createElement('tbody');
       let tr = document.createElement('tr');
-
       for (let i = 0; i < first.getDay(); i++) tr.appendChild(document.createElement('td'));
-
       for (let d = 1; d <= last.getDate(); d++) {
         if (tr.children.length === 7) { tbody.appendChild(tr); tr = document.createElement('tr'); }
-        const cur  = new Date(first.getFullYear(), first.getMonth(), d);
-        const dow  = cur.getDay();
-        const holi = holidayName(cur);
-        const td   = document.createElement('td');
+        const cur = new Date(first.getFullYear(), first.getMonth(), d);
+        const dow = cur.getDay(); const holi = holidayName(cur);
+        const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
         if (dow === 6) td.classList.add('sat');
-        if (holi)      td.classList.add('holi');
-
-        const rows = { 朝: [], 昼: [], 夜: [] };
-        for (const t of teams) {
-          const s = getShift(t, cur);
-          if (s !== '休') rows[s].push(t);
-        }
-        const makeRow = (shift) => {
-          const badges = rows[shift].map(t => `<span class="shift-badge">${t}</span>`).join('');
-          return `<div class="shift-row row-${shift}">${badges}</div>`;
-        };
+        if (holi) td.classList.add('holi');
+        const rows = { 朝:[], 昼:[], 夜:[] };
+        for (const t of teams) { const s = getShift(t, cur); if (s !== '休') rows[s].push(t); }
+        const makeRow = shift => `<div class="shift-row row-${shift}">${rows[shift].map(t=>`<span class="shift-badge">${t}</span>`).join('')}</div>`;
         td.innerHTML = `<div class="cell-all"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('昼')}${makeRow('夜')}</div>`;
         tr.appendChild(td);
       }
       while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
-      tbody.appendChild(tr);
-      table.appendChild(tbody);
-      box.appendChild(table);
-      container.appendChild(box);
+      tbody.appendChild(tr); table.appendChild(tbody); box.appendChild(table); container.appendChild(box);
     }
   }
 
   function render() {
     container.innerHTML = '';
     updateMonthLabel();
-    const team   = teamSelect.value;
+    const team = teamSelect.value;
     const months = parseInt(monthsSelect.value, 10);
     if (team === 'ALL') renderAllTeams(months);
     else renderSingleTeam(team, months);
@@ -1154,52 +479,25 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   function buildPrintHTML(year, month) {
     const first = new Date(year, month, 1);
     const last  = new Date(year, month + 1, 0);
-    const title = `${year}年 ${month + 1}月 全班シフト`;
-
-    let rows = '';
-    let tr   = '';
-    let colIdx = 0;
-
-    for (let i = 0; i < first.getDay(); i++) {
-      tr += '<td></td>';
-      colIdx++;
-    }
-
+    let rows = '', tr = '', colIdx = 0;
+    for (let i = 0; i < first.getDay(); i++) { tr += '<td></td>'; colIdx++; }
     for (let d = 1; d <= last.getDate(); d++) {
       if (colIdx === 7) { rows += `<tr>${tr}</tr>`; tr = ''; colIdx = 0; }
-
-      const cur   = new Date(year, month, d);
-      const dow   = cur.getDay();
-      const holi  = holidayName(cur);
-
+      const cur = new Date(year, month, d); const dow = cur.getDay(); const holi = holidayName(cur);
       const dayClass = (dow === 0 || holi) ? 'holiday' : dow === 6 ? 'sat' : '';
       const holiHTML = holi ? `<span class="p-holiday-name">${holi}</span>` : '';
-
-      const shiftsByType = { 朝: [], 昼: [], 夜: [], 休: [] };
-      for (const t of teams) {
-        const s = getShift(t, cur);
-        shiftsByType[s].push(t);
-      }
-
-      const makeShiftBadges = (shift) =>
-        shiftsByType[shift].map(t => `<span class="p-badge b${shift}">${t}</span>`).join('');
-
-      const shiftHTML = ['朝','昼','夜'].map(s => {
-        const badges = makeShiftBadges(s);
-        return badges ? `<div class="p-shift-row">${badges}</div>` : '';
-      }).join('');
-
-      const restBadges = makeShiftBadges('休');
-      const restHTML = restBadges ? `<div class="p-shift-row">${restBadges}</div>` : '';
-
+      const shiftsByType = { 朝:[], 昼:[], 夜:[], 休:[] };
+      for (const t of teams) shiftsByType[getShift(t, cur)].push(t);
+      const badges = s => shiftsByType[s].map(t=>`<span class="p-badge b${s}">${t}</span>`).join('');
+      const shiftHTML = ['朝','昼','夜'].map(s => { const b=badges(s); return b?`<div class="p-shift-row">${b}</div>`:''; }).join('');
+      const restHTML = badges('休') ? `<div class="p-shift-row">${badges('休')}</div>` : '';
       tr += `<td><div class="p-cell"><span class="p-day ${dayClass}">${d}</span>${holiHTML}${shiftHTML}${restHTML}</div></td>`;
       colIdx++;
     }
     while (colIdx < 7) { tr += '<td></td>'; colIdx++; }
     rows += `<tr>${tr}</tr>`;
-
     return `
-      <div class="print-title">${title}</div>
+      <div class="print-title">${year}年 ${month+1}月 全班シフト</div>
       <div class="print-legend">
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 7:00～15:15</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>午后勤 15:00～22:45</div>
@@ -1212,50 +510,36 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       </table>`;
   }
 
-  openPrintBtn.addEventListener('click', () => { printModal.classList.add('open'); });
-  closePrintBtn.addEventListener('click', () => { printModal.classList.remove('open'); });
-  printModal.addEventListener('click', (e) => { if (e.target === printModal) printModal.classList.remove('open'); });
+  openPrintBtn.addEventListener('click', () => printModal.classList.add('open'));
+  closePrintBtn.addEventListener('click', () => printModal.classList.remove('open'));
+  printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
 
   doPrintBtn.addEventListener('click', () => {
     const y      = parseInt(printYearSel.value, 10);
     const m      = parseInt(printMonthSel.value, 10);
+    const size   = document.getElementById('printSize').value;
     const orient = printOrientSel.value;
 
     let pageStyle = document.getElementById('dynamicPageStyle');
-    if (!pageStyle) {
-      pageStyle = document.createElement('style');
-      pageStyle.id = 'dynamicPageStyle';
-      document.head.appendChild(pageStyle);
-    }
-    pageStyle.textContent = `@page { size: A4 ${orient}; margin: 8mm 10mm; }`;
+    if (!pageStyle) { pageStyle = document.createElement('style'); pageStyle.id = 'dynamicPageStyle'; document.head.appendChild(pageStyle); }
+    pageStyle.textContent = `@page { size: ${size} ${orient}; margin: 0; }`;
 
     printWrap.innerHTML = buildPrintHTML(y, m);
-    printWrap.className = `orient-${orient}`;
+    printWrap.className = `size-${size} orient-${orient}`;
     printWrap.style.display = 'block';
-
     printModal.classList.remove('open');
-
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => { printWrap.style.display = 'none'; }, 500);
-    }, 150);
+    setTimeout(() => { window.print(); setTimeout(() => { printWrap.style.display = 'none'; }, 500); }, 150);
   });
 
-  [openPrintBtn, closePrintBtn, doPrintBtn].forEach(btn => {
-    btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
-  });
+  [openPrintBtn, closePrintBtn, doPrintBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  teamSelect.onchange = () => {
-    localStorage.setItem("shiftTeam", teamSelect.value);
-    render();
-  };
+  teamSelect.onchange = () => { localStorage.setItem("shiftTeam", teamSelect.value); render(); };
   monthsSelect.onchange = render;
   prevBtn.onclick = () => { startMonth--; if (startMonth < 0) { startMonth = 11; startYear--; } render(); };
   nextBtn.onclick = () => { startMonth++; if (startMonth > 11) { startMonth = 0; startYear++; } render(); };
 
   updateBadge();
   render();
-
 })();
 </script>
 </body>
