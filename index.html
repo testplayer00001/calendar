@@ -887,7 +887,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       const dow   = cur.getDay();
       const holi  = holidayName(cur);
 
-      // 日曜または祝日 → holiday クラス、土曜 → sat
       const dayClass = (dow === 0 || holi) ? 'holiday' : dow === 6 ? 'sat' : '';
       const holiHTML = holi ? `<span class="p-holiday-name">${holi}</span>` : '';
 
