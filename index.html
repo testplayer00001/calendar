@@ -19,10 +19,12 @@
   --朝: #60a5fa;
   --昼: #fbbf24;
   --夜: #a78bfa;
+  --有給: #34d399;
   --休-bg: rgba(255,107,107,0.12);
   --朝-bg: rgba(96,165,250,0.12);
   --昼-bg: rgba(251,191,36,0.12);
   --夜-bg: rgba(167,139,250,0.12);
+  --有給-bg: rgba(52,211,153,0.12);
 }
 html.light {
   --bg: #f0f4f8;
@@ -37,10 +39,12 @@ html.light {
   --朝: #2563eb;
   --昼: #d97706;
   --夜: #7c3aed;
+  --有給: #059669;
   --休-bg: rgba(229,62,62,0.1);
   --朝-bg: rgba(37,99,235,0.1);
   --昼-bg: rgba(217,119,6,0.1);
   --夜-bg: rgba(124,58,237,0.1);
+  --有給-bg: rgba(5,150,105,0.1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 80px 20px 32px; -webkit-tap-highlight-color: transparent; transition: background 0.2s, color 0.2s; }
@@ -55,13 +59,12 @@ select:focus { border-color: #3b82f6; }
 select:focus:not(:focus-visible) { border-color: var(--border); outline: none; }
 .month-nav { display: flex; align-items: center; gap: 8px; }
 .nav-btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s; flex-shrink: 0; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-.nav-btn:hover { background: var(--surface2); border-color: #3b82f6; }
-.nav-btn:focus:not(:focus-visible) { outline: none; box-shadow: none; border-color: var(--border); }
-.nav-btn:active, .nav-btn:focus { outline: none; box-shadow: none; border-color: var(--border); }
+.nav-btn:hover { border-color: #3b82f6; }
+.nav-btn:focus:not(:focus-visible), .nav-btn:active, .nav-btn:focus { outline: none; box-shadow: none; border-color: var(--border); }
 .nav-btn:focus-visible { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.4); }
 .month-label { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--text); min-width: 90px; text-align: center; letter-spacing: 0.05em; }
 .today-btn { display: flex; align-items: center; gap: 5px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; white-space: nowrap; letter-spacing: 0.05em; }
-.today-btn:hover { background: var(--surface2); border-color: #3b82f6; color: #3b82f6; }
+.today-btn:hover { border-color: #3b82f6; color: #3b82f6; }
 .today-btn:focus, .today-btn:active { outline: none; box-shadow: none; }
 .today-btn:focus:not(:focus-visible) { outline: none; }
 .print-btn { display: flex; align-items: center; gap: 6px; background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
@@ -76,6 +79,9 @@ html.light .news-btn { background: #dcfce7; color: #15803d; border-color: #22c55
 html.light .news-btn:hover { background: #bbf7d0; }
 .news-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 99px; padding: 1px 5px; min-width: 16px; text-align: center; line-height: 1.4; pointer-events: none; }
 .news-badge.hidden { display: none; }
+.kyuuka-btn { display: flex; align-items: center; gap: 6px; background: rgba(52,211,153,0.12); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
+.kyuuka-btn:hover { background: rgba(52,211,153,0.2); }
+.kyuuka-btn:focus:not(:focus-visible) { outline: none; }
 .theme-btn { display: flex; align-items: center; justify-content: center; width: 48px; height: 26px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.35s, border-color 0.35s; flex-shrink: 0; user-select: none; -webkit-user-select: none; padding: 0; position: relative; overflow: hidden; }
 .theme-btn:hover { border-color: #3b82f6; }
 .theme-btn:focus:not(:focus-visible) { outline: none; }
@@ -125,7 +131,7 @@ html.light .news-modal-header h2 { color: #15803d; }
 .news-item-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em; }
 .news-item-tag { font-size: 0.65rem; font-weight: 700; border-radius: 4px; padding: 1px 7px; letter-spacing: 0.05em; line-height: 1.6; }
 .tag-update { background: rgba(59,130,246,0.15); color: #2563eb; }
-.tag-fix    { background: rgba(34,197,94,0.15);  color: #15803d; }
+.tag-fix    { background: rgba(34,197,94,0.15); color: #15803d; }
 .tag-notice { background: rgba(251,191,36,0.15); color: #b45309; }
 .tag-maint  { background: rgba(167,139,250,0.15); color: #7c3aed; }
 html:not(.light) .tag-update { color: #60a5fa; }
@@ -134,6 +140,23 @@ html:not(.light) .tag-notice { color: #fbbf24; }
 html:not(.light) .tag-maint  { color: #c4b5fd; }
 .news-item-title { font-size: 0.85rem; font-weight: 600; color: var(--text); line-height: 1.4; }
 .news-item-body  { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+.kyuuka-modal { width: min(480px, 94vw); }
+.kyuuka-modal h2 { color: var(--有給); }
+.kyuuka-input { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; cursor: pointer; }
+.kyuuka-input:focus { border-color: var(--有給); }
+.btn-add { background: rgba(52,211,153,0.15); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
+.btn-add:hover { background: rgba(52,211,153,0.25); }
+.btn-add:focus:not(:focus-visible) { outline: none; }
+.kyuuka-list { display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+.kyuuka-list::-webkit-scrollbar { width: 4px; }
+.kyuuka-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.kyuuka-list-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 12px 0; }
+.kyuuka-list-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+.kyuuka-list-item-date { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text); letter-spacing: 0.04em; }
+.kyuuka-list-item-del { background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; outline: none; transition: color 0.2s, background 0.2s; -webkit-tap-highlight-color: transparent; line-height: 1; }
+.kyuuka-list-item-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+.kyuuka-list-item-del:focus:not(:focus-visible) { outline: none; }
+.loading-msg { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0; }
 @media print {
   body > *:not(#printWrap) { display: none !important; }
   #printWrap { display: block !important; background: #fff; color: #111; font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 0; width: 100%; height: 100%; }
@@ -150,9 +173,9 @@ html:not(.light) .tag-maint  { color: #c4b5fd; }
   #printWrap.orient-landscape tbody tr { height: 22mm; }
   #printWrap .p-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 1px; gap: 2px; height: 100%; }
   #printWrap .p-day { font-size: 0.95rem; font-weight: 700; color: #111; line-height: 1; margin-bottom: 3px; }
-  #printWrap .p-day.sun     { color: #c0392b; }
+  #printWrap .p-day.sun { color: #c0392b; }
   #printWrap .p-day.holiday { color: #c0392b; }
-  #printWrap .p-day.sat     { color: #2980b9; }
+  #printWrap .p-day.sat { color: #2980b9; }
   #printWrap .p-shift-row { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; }
   #printWrap .p-badge { font-size: 0.62rem; font-weight: 700; border-radius: 3px; padding: 1px 4px; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #printWrap .p-badge.b朝 { color: #1d4ed8; background: #dbeafe; }
@@ -193,6 +216,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .s朝 { color: var(--朝); background: var(--朝-bg); }
 .s昼 { color: var(--昼); background: var(--昼-bg); }
 .s夜 { color: var(--夜); background: var(--夜-bg); }
+.s有給 { color: var(--有給); background: var(--有給-bg); }
 .today .cell-inner, .today .cell-all { background: var(--today-bg); box-shadow: 0 0 0 2px var(--today-border); }
 .today .day-num, .today .all-day-num { color: #3b82f6; font-weight: 700; }
 .sun .day-num, .sun .all-day-num { color: var(--休); opacity: 0.7; }
@@ -234,6 +258,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <button class="today-btn" id="goToday">今月</button>
   </div>
   <div class="ctrl-group">
+    <button class="kyuuka-btn" id="openKyuukaModal">有給</button>
+  </div>
+  <div class="ctrl-group">
     <button class="print-btn" id="openPrintModal">印刷</button>
   </div>
   <div class="ctrl-group">
@@ -257,8 +284,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--昼)"></div>午后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--有給)"></div>有給</div>
 </div>
 <div id="calendar" class="calendar"></div>
+
 <div class="modal-overlay" id="printModal">
   <div class="modal">
     <h2>印刷する月を選択</h2>
@@ -288,6 +317,24 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="kyuukaModal">
+  <div class="modal kyuuka-modal">
+    <h2>有給管理</h2>
+    <div class="modal-row">
+      <label style="min-width:auto;font-size:0.8rem;color:var(--text-muted)">日付を追加</label>
+    </div>
+    <div class="modal-row">
+      <input type="date" class="kyuuka-input" id="kyuukaDateInput" />
+      <button class="btn-add" id="kyuukaAddBtn">追加</button>
+    </div>
+    <div class="kyuuka-list" id="kyuukaList"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeKyuukaModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="newsModal">
   <div class="modal news-modal">
     <div class="news-modal-header">
@@ -297,27 +344,34 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="news-list" id="newsList"></div>
   </div>
 </div>
+
 <div id="printWrap" style="display:none"></div>
 <script>
 (() => {
   const NEWS_DATA = [
     {
+      date:  "2026-06-11",
+      type:  "update",
+      title: "有給追加・表示月数保存追加",
+      body:  "有給をモーダルから追加・削除できます。月が替わると前月以前の有給データを自動削除。表示月数がブラウザに保存されます。"
+    },
+    {
       date:  "2026-06-08",
       type:  "update",
       title: "ライト/ダークモード切替を追加",
-      body:  "コントロールバーの🌙ボタンでモードを切り替えられます。設定はブラウザに保存されます。"
+      body:  "コントロールバーのトグルスイッチでモードを切り替えられます。"
     },
     {
       date:  "2026-06-08",
       type:  "update",
       title: "今月に戻るボタンを追加",
-      body:  "コントロールバーに「今月」ボタンを追加しました。別の月を閲覧中でも、ボタン一つで当月に戻れます。"
+      body:  "コントロールバーに「今月」ボタンを追加しました。"
     },
     {
       date:  "2026-06-08",
       type:  "update",
       title: "お知らせ機能を追加",
-      body:  "このお知らせパネルを実装しました。機能追加・修正・メンテナンスの記録をここで確認できます。"
+      body:  "このお知らせパネルを実装しました。"
     },
     {
       date:  "2026-04-02",
@@ -329,8 +383,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 
   const TYPE_LABEL = { update:"機能追加", fix:"修正", notice:"お知らせ", maint:"メンテナンス" };
   const cycle = ['朝','朝','昼','昼','夜','夜','休','休'];
-  const teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
+  let teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
   const teams = ['A','B','C','D'];
+
   const HOLIDAYS = {
     "2025-01-01":"元日","2025-01-13":"成人の日","2025-02-11":"建国記念の日",
     "2025-02-23":"天皇誕生日","2025-02-24":"振替休日","2025-03-20":"春分の日",
@@ -373,32 +428,38 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     "2030-11-23":"勤労感謝の日"
   };
 
-  function holidayName(date) {
-    const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-    return HOLIDAYS[key] || null;
+  function dateKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
   }
+  function holidayName(date) { return HOLIDAYS[dateKey(date)] || null; }
 
-  const monthsSelect   = document.getElementById('monthsToShow');
-  const teamSelect     = document.getElementById('teamSelect');
-  const container      = document.getElementById('calendar');
-  const monthLabel     = document.getElementById('monthLabel');
-  const prevBtn        = document.getElementById('prevMonth');
-  const nextBtn        = document.getElementById('nextMonth');
-  const goTodayBtn     = document.getElementById('goToday');
-  const openPrintBtn   = document.getElementById('openPrintModal');
-  const closePrintBtn  = document.getElementById('closePrintModal');
-  const doPrintBtn     = document.getElementById('doPrint');
-  const printModal     = document.getElementById('printModal');
-  const printYearSel   = document.getElementById('printYear');
-  const printMonthSel  = document.getElementById('printMonth');
-  const printOrientSel = document.getElementById('printOrientation');
-  const printWrap      = document.getElementById('printWrap');
-  const newsModal      = document.getElementById('newsModal');
-  const openNewsBtn    = document.getElementById('openNewsModal');
-  const closeNewsBtn   = document.getElementById('closeNewsModal');
-  const newsBadge      = document.getElementById('newsBadge');
-  const newsList       = document.getElementById('newsList');
-  const themeToggle    = document.getElementById('themeToggle');
+  const monthsSelect    = document.getElementById('monthsToShow');
+  const teamSelect      = document.getElementById('teamSelect');
+  const container       = document.getElementById('calendar');
+  const monthLabel      = document.getElementById('monthLabel');
+  const prevBtn         = document.getElementById('prevMonth');
+  const nextBtn         = document.getElementById('nextMonth');
+  const goTodayBtn      = document.getElementById('goToday');
+  const openPrintBtn    = document.getElementById('openPrintModal');
+  const closePrintBtn   = document.getElementById('closePrintModal');
+  const doPrintBtn      = document.getElementById('doPrint');
+  const printModal      = document.getElementById('printModal');
+  const printYearSel    = document.getElementById('printYear');
+  const printMonthSel   = document.getElementById('printMonth');
+  const printOrientSel  = document.getElementById('printOrientation');
+  const printWrap       = document.getElementById('printWrap');
+  const newsModal       = document.getElementById('newsModal');
+  const openNewsBtn     = document.getElementById('openNewsModal');
+  const closeNewsBtn    = document.getElementById('closeNewsModal');
+  const newsBadge       = document.getElementById('newsBadge');
+  const newsList        = document.getElementById('newsList');
+  const themeToggle     = document.getElementById('themeToggle');
+  const kyuukaModal     = document.getElementById('kyuukaModal');
+  const openKyuukaBtn   = document.getElementById('openKyuukaModal');
+  const closeKyuukaBtn  = document.getElementById('closeKyuukaModal');
+  const kyuukaDateInput = document.getElementById('kyuukaDateInput');
+  const kyuukaAddBtn    = document.getElementById('kyuukaAddBtn');
+  const kyuukaListEl    = document.getElementById('kyuukaList');
 
   const today = new Date();
   let startYear  = today.getFullYear();
@@ -415,10 +476,11 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const savedTeam = localStorage.getItem("shiftTeam");
   if (savedTeam && (teamBaseDates[savedTeam] || savedTeam === "ALL")) teamSelect.value = savedTeam;
 
+  const savedMonths = localStorage.getItem("shiftMonths");
+  if (savedMonths) monthsSelect.value = savedMonths;
+
   const savedTheme = localStorage.getItem("shiftTheme");
-  if (savedTheme === "light") {
-    document.documentElement.classList.add("light");
-  }
+  if (savedTheme === "light") document.documentElement.classList.add("light");
 
   themeToggle.addEventListener('click', () => {
     document.documentElement.classList.toggle("light");
@@ -427,13 +489,70 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     setTimeout(() => themeToggle.blur(), 100);
   });
 
+  function diffDays(a, b) {
+    return Math.floor((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate()) - Date.UTC(a.getFullYear(),a.getMonth(),a.getDate())) / 86400000);
+  }
+  function getShift(teamKey, date) {
+    const base = new Date(teamBaseDates[teamKey] + 'T00:00');
+    return cycle[((diffDays(base, date) % 8) + 8) % 8];
+  }
+
+  const KYUUKA_KEY = "shiftKyuuka";
+  function loadKyuuka() {
+    try { return JSON.parse(localStorage.getItem(KYUUKA_KEY) || "[]"); } catch { return []; }
+  }
+  function saveKyuuka(arr) { localStorage.setItem(KYUUKA_KEY, JSON.stringify(arr)); }
+  function purgePastKyuuka() {
+    const thisMonth = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+    const filtered = loadKyuuka().filter(d => d.slice(0,7) >= thisMonth);
+    saveKyuuka(filtered);
+  }
+  purgePastKyuuka();
+  function isKyuuka(date) {
+    const team = teamSelect.value;
+    if (team === 'ALL') return false;
+    return loadKyuuka().includes(dateKey(date));
+  }
+
+  function renderKyuukaList() {
+    const arr = loadKyuuka().sort();
+    kyuukaListEl.innerHTML = '';
+    if (arr.length === 0) {
+      kyuukaListEl.innerHTML = '<div class="kyuuka-list-empty">有給の登録はありません</div>';
+      return;
+    }
+    arr.forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'kyuuka-list-item';
+      row.innerHTML = `<span class="kyuuka-list-item-date">${d.replace(/-/g,'/')}</span><button class="kyuuka-list-item-del" data-date="${d}" aria-label="削除">✕</button>`;
+      row.querySelector('.kyuuka-list-item-del').addEventListener('click', () => {
+        saveKyuuka(loadKyuuka().filter(x => x !== d));
+        renderKyuukaList();
+        render();
+      });
+      kyuukaListEl.appendChild(row);
+    });
+  }
+
+  kyuukaAddBtn.addEventListener('click', () => {
+    const val = kyuukaDateInput.value;
+    if (!val) return;
+    const arr = loadKyuuka();
+    if (!arr.includes(val)) { arr.push(val); saveKyuuka(arr); }
+    kyuukaDateInput.value = '';
+    renderKyuukaList();
+    render();
+  });
+
+  openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); kyuukaModal.classList.add('open'); });
+  closeKyuukaBtn.addEventListener('click', () => kyuukaModal.classList.remove('open'));
+  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) kyuukaModal.classList.remove('open'); });
+  [openKyuukaBtn, closeKyuukaBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
+
   const STORAGE_KEY_NEWS = "shiftNewsRead";
   function getReadDate() { return localStorage.getItem(STORAGE_KEY_NEWS) || null; }
   function markAllRead() { localStorage.setItem(STORAGE_KEY_NEWS, NEWS_DATA[0]?.date || ""); }
-  function countUnread() {
-    const r = getReadDate();
-    return r ? NEWS_DATA.filter(n => n.date > r).length : NEWS_DATA.length;
-  }
+  function countUnread() { const r = getReadDate(); return r ? NEWS_DATA.filter(n => n.date > r).length : NEWS_DATA.length; }
   function updateBadge() {
     const n = countUnread();
     if (n > 0) { newsBadge.textContent = n; newsBadge.classList.remove('hidden'); }
@@ -465,22 +584,14 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 
   goTodayBtn.addEventListener('click', () => { startYear = today.getFullYear(); startMonth = today.getMonth(); render(); });
   goTodayBtn.addEventListener('pointerup', () => setTimeout(() => goTodayBtn.blur(), 100));
-  goTodayBtn.addEventListener('touchend', (e) => { e.preventDefault(); goTodayBtn.click(); goTodayBtn.blur(); });
+  goTodayBtn.addEventListener('touchend', e => { e.preventDefault(); goTodayBtn.click(); goTodayBtn.blur(); });
 
   [prevBtn, nextBtn].forEach(btn => {
     btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); btn.click(); btn.blur(); });
+    btn.addEventListener('touchend', e => { e.preventDefault(); btn.click(); btn.blur(); });
   });
 
   function updateMonthLabel() { monthLabel.textContent = `${startYear}年 ${startMonth + 1}月`; }
-
-  function diffDays(a, b) {
-    return Math.floor((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate()) - Date.UTC(a.getFullYear(),a.getMonth(),a.getDate())) / 86400000);
-  }
-  function getShift(teamKey, date) {
-    const base = new Date(teamBaseDates[teamKey] + 'T00:00');
-    return cycle[((diffDays(base, date) % 8) + 8) % 8];
-  }
 
   function renderSingleTeam(team, months) {
     for (let m = 0; m < months; m++) {
@@ -497,7 +608,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       for (let d = 1; d <= last.getDate(); d++) {
         if (tr.children.length === 7) { tbody.appendChild(tr); tr = document.createElement('tr'); }
         const cur = new Date(first.getFullYear(), first.getMonth(), d);
-        const s = getShift(team, cur); const dow = cur.getDay(); const holi = holidayName(cur);
+        const dow = cur.getDay(); const holi = holidayName(cur);
+        const kyuuka = isKyuuka(cur);
+        const s = kyuuka ? '有給' : getShift(team, cur);
         const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
@@ -591,8 +704,8 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
 
   doPrintBtn.addEventListener('click', () => {
-    const y      = parseInt(printYearSel.value, 10);
-    const m      = parseInt(printMonthSel.value, 10);
+    const y = parseInt(printYearSel.value, 10);
+    const m = parseInt(printMonthSel.value, 10);
     const orient = printOrientSel.value;
     let pageStyle = document.getElementById('dynamicPageStyle');
     if (!pageStyle) { pageStyle = document.createElement('style'); pageStyle.id = 'dynamicPageStyle'; document.head.appendChild(pageStyle); }
@@ -607,12 +720,21 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   [openPrintBtn, closePrintBtn, doPrintBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   teamSelect.onchange = () => { localStorage.setItem("shiftTeam", teamSelect.value); render(); };
-  monthsSelect.onchange = render;
+  monthsSelect.onchange = () => { localStorage.setItem("shiftMonths", monthsSelect.value); render(); };
   prevBtn.onclick = () => { startMonth--; if (startMonth < 0) { startMonth = 11; startYear--; } render(); };
   nextBtn.onclick = () => { startMonth++; if (startMonth > 11) { startMonth = 0; startYear++; } render(); };
 
-  updateBadge();
-  render();
+  container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  fetch('day.json')
+    .then(r => r.json())
+    .then(data => {
+      teamBaseDates = { ...teamBaseDates, ...data };
+    })
+    .catch(() => {})
+    .finally(() => {
+      updateBadge();
+      render();
+    });
 })();
 </script>
 </body>
