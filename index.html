@@ -62,6 +62,7 @@ select:focus:not(:focus-visible) { border-color: var(--border); outline: none; }
 .month-label { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--text); min-width: 90px; text-align: center; letter-spacing: 0.05em; }
 .today-btn { display: flex; align-items: center; gap: 5px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; white-space: nowrap; letter-spacing: 0.05em; }
 .today-btn:hover { background: var(--surface2); border-color: #3b82f6; color: #3b82f6; }
+.today-btn:focus, .today-btn:active { outline: none; box-shadow: none; }
 .today-btn:focus:not(:focus-visible) { outline: none; }
 .print-btn { display: flex; align-items: center; gap: 6px; background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
 .print-btn:hover { background: #1e4a7f; }
@@ -301,11 +302,29 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 (() => {
   const NEWS_DATA = [
     {
+      date:  "2026-06-08",
+      type:  "update",
+      title: "ライト/ダークモード切替を追加",
+      body:  "コントロールバーの🌙ボタンでモードを切り替えられます。設定はブラウザに保存されます。"
+    },
+    {
+      date:  "2026-06-08",
+      type:  "update",
+      title: "今月に戻るボタンを追加",
+      body:  "コントロールバーに「今月」ボタンを追加しました。別の月を閲覧中でも、ボタン一つで当月に戻れます。"
+    },
+    {
+      date:  "2026-06-08",
+      type:  "update",
+      title: "お知らせ機能を追加",
+      body:  "このお知らせパネルを実装しました。機能追加・修正・メンテナンスの記録をここで確認できます。"
+    },
+    {
       date:  "2026-04-02",
       type:  "notice",
       title: "カレンダー公開",
       body:  "A・B・C・D班のシフトカレンダーを公開しました。"
-    },
+    }
   ];
 
   const TYPE_LABEL = { update:"機能追加", fix:"修正", notice:"お知らせ", maint:"メンテナンス" };
@@ -444,7 +463,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   newsModal.addEventListener('click', e => { if (e.target === newsModal) newsModal.classList.remove('open'); });
   [openNewsBtn, closeNewsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  goTodayBtn.addEventListener('click', () => { startYear = today.getFullYear(); startMonth = today.getMonth(); render(); setTimeout(() => goTodayBtn.blur(), 100); });
+  goTodayBtn.addEventListener('click', () => { startYear = today.getFullYear(); startMonth = today.getMonth(); render(); });
+  goTodayBtn.addEventListener('pointerup', () => setTimeout(() => goTodayBtn.blur(), 100));
+  goTodayBtn.addEventListener('touchend', (e) => { e.preventDefault(); goTodayBtn.click(); goTodayBtn.blur(); });
+
   [prevBtn, nextBtn].forEach(btn => {
     btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
     btn.addEventListener('touchend', (e) => { e.preventDefault(); btn.click(); btn.blur(); });
