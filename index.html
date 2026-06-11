@@ -46,6 +46,7 @@ html.light {
   --夜-bg: rgba(124,58,237,0.1);
   --有給-bg: rgba(5,150,105,0.1);
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 80px 20px 32px; -webkit-tap-highlight-color: transparent; transition: background 0.2s, color 0.2s; }
 header { text-align: center; margin-bottom: 40px; }
@@ -221,6 +222,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .today .day-num, .today .all-day-num { color: #3b82f6; font-weight: 700; }
 .sun .day-num, .sun .all-day-num { color: var(--休); opacity: 0.7; }
 .sat .day-num, .sat .all-day-num { color: var(--朝); opacity: 0.7; }
+.site-footer {text-align: center;margin-top: 40px;padding: 20px 0;color: var(--text-muted);font-size: 0.75rem;}
 </style>
 </head>
 <body>
@@ -743,5 +745,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     });
 })();
 </script>
+
+<footer class="site-footer">
+  <small>Created by S │ THX</small>
+</footer>
+
 </body>
 </html>
