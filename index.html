@@ -46,7 +46,6 @@ html.light {
   --夜-bg: rgba(124,58,237,0.1);
   --有給-bg: rgba(5,150,105,0.1);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 80px 20px 32px; -webkit-tap-highlight-color: transparent; transition: background 0.2s, color 0.2s; }
 header { text-align: center; margin-bottom: 40px; }
@@ -80,21 +79,13 @@ html.light .news-btn { background: #dcfce7; color: #15803d; border-color: #22c55
 html.light .news-btn:hover { background: #bbf7d0; }
 .news-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 99px; padding: 1px 5px; min-width: 16px; text-align: center; line-height: 1.4; pointer-events: none; }
 .news-badge.hidden { display: none; }
-.kyuuka-btn { display: flex; align-items: center; gap: 6px; background: rgba(52,211,153,0.12); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
+.kyuuka-btn { display: flex; align-items: center; gap: 6px; background: var(--有給-bg); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
 .kyuuka-btn:hover { background: rgba(52,211,153,0.2); }
 .kyuuka-btn:focus:not(:focus-visible) { outline: none; }
-.theme-btn { display: flex; align-items: center; justify-content: center; width: 48px; height: 26px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.35s, border-color 0.35s; flex-shrink: 0; user-select: none; -webkit-user-select: none; padding: 0; position: relative; overflow: hidden; }
-.theme-btn:hover { border-color: #3b82f6; }
-.theme-btn:focus:not(:focus-visible) { outline: none; }
-.theme-btn-track { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 4px; justify-content: space-between; pointer-events: none; }
-.theme-btn-track svg { width: 13px; height: 13px; transition: opacity 0.3s; }
-.theme-btn-sun { opacity: 0; color: #f59e0b; }
-.theme-btn-moon { opacity: 1; color: #93c5fd; }
-.theme-btn-thumb { position: absolute; left: 3px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: #93c5fd; transition: left 0.32s cubic-bezier(0.34,1.56,0.64,1), background 0.32s; box-shadow: 0 1px 4px rgba(0,0,0,0.3); pointer-events: none; }
-html.light .theme-btn { background: #fef3c7; border-color: #fbbf24; }
-html.light .theme-btn-sun { opacity: 1; }
-html.light .theme-btn-moon { opacity: 0; }
-html.light .theme-btn-thumb { left: calc(100% - 21px); background: #f59e0b; }
+.settings-btn { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: border-color 0.2s, color 0.2s; flex-shrink: 0; user-select: none; -webkit-user-select: none; }
+.settings-btn:hover { border-color: #3b82f6; color: var(--text); }
+.settings-btn:focus:not(:focus-visible) { outline: none; }
+.settings-btn svg { width: 16px; height: 16px; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 32px; width: min(420px, 92vw); display: flex; flex-direction: column; gap: 20px; }
@@ -111,6 +102,9 @@ html.light .theme-btn-thumb { left: calc(100% - 21px); background: #f59e0b; }
 .btn-print:focus:not(:focus-visible) { outline: none; }
 html.light .btn-print { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
 html.light .btn-print:hover { background: #bfdbfe; }
+.btn-danger { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid #ef4444; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
+.btn-danger:hover { background: rgba(239,68,68,0.22); }
+.btn-danger:focus:not(:focus-visible) { outline: none; }
 .news-modal { width: min(520px, 94vw); gap: 0; padding: 0; overflow: hidden; }
 .news-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 28px 18px; border-bottom: 1px solid var(--border); }
 .news-modal-header h2 { font-size: 1rem; font-weight: 700; color: #22c55e; letter-spacing: 0.1em; text-align: left; display: flex; align-items: center; gap: 8px; }
@@ -148,7 +142,7 @@ html:not(.light) .tag-maint  { color: #c4b5fd; }
 .btn-add { background: rgba(52,211,153,0.15); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
 .btn-add:hover { background: rgba(52,211,153,0.25); }
 .btn-add:focus:not(:focus-visible) { outline: none; }
-.kyuuka-list { display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+.kyuuka-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
 .kyuuka-list::-webkit-scrollbar { width: 4px; }
 .kyuuka-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 .kyuuka-list-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 12px 0; }
@@ -157,7 +151,56 @@ html:not(.light) .tag-maint  { color: #c4b5fd; }
 .kyuuka-list-item-del { background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; outline: none; transition: color 0.2s, background 0.2s; -webkit-tap-highlight-color: transparent; line-height: 1; }
 .kyuuka-list-item-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
 .kyuuka-list-item-del:focus:not(:focus-visible) { outline: none; }
-.loading-msg { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0; }
+.settings-modal { width: min(460px, 94vw); }
+.settings-section { display: flex; flex-direction: column; gap: 10px; }
+.settings-section-title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.settings-row-label { font-size: 0.85rem; color: var(--text); }
+.settings-row-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.toggle-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; transition: background 0.25s, border-color 0.25s; }
+.toggle-slider::before { content: ''; position: absolute; left: 3px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--text-muted); transition: left 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.25s; }
+.toggle input:checked + .toggle-slider { background: rgba(59,130,246,0.2); border-color: #3b82f6; }
+.toggle input:checked + .toggle-slider::before { left: calc(100% - 19px); background: #3b82f6; }
+.theme-toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-btn { display: flex; align-items: center; justify-content: center; width: 48px; height: 26px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.35s, border-color 0.35s; flex-shrink: 0; user-select: none; -webkit-user-select: none; padding: 0; position: relative; overflow: hidden; }
+.theme-toggle-btn:hover { border-color: #3b82f6; }
+.theme-toggle-btn:focus:not(:focus-visible) { outline: none; }
+.theme-toggle-btn .tt-track { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 4px; justify-content: space-between; pointer-events: none; }
+.theme-toggle-btn .tt-track svg { width: 13px; height: 13px; transition: opacity 0.3s; }
+.tt-sun { opacity: 0; color: #f59e0b; }
+.tt-moon { opacity: 1; color: #93c5fd; }
+.theme-toggle-btn .tt-thumb { position: absolute; left: 3px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: #93c5fd; transition: left 0.32s cubic-bezier(0.34,1.56,0.64,1), background 0.32s; box-shadow: 0 1px 4px rgba(0,0,0,0.3); pointer-events: none; }
+html.light .theme-toggle-btn { background: #fef3c7; border-color: #fbbf24; }
+html.light .theme-toggle-btn .tt-sun { opacity: 1; }
+html.light .theme-toggle-btn .tt-moon { opacity: 0; }
+html.light .theme-toggle-btn .tt-thumb { left: calc(100% - 21px); background: #f59e0b; }
+.theme-mode-label { font-size: 0.8rem; color: var(--text-muted); min-width: 52px; }
+.settings-select { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.82rem; font-family: 'DM Mono', monospace; outline: none; -webkit-appearance: none; cursor: pointer; transition: border-color 0.2s; }
+.settings-select:focus { border-color: #3b82f6; }
+.data-modal { width: min(500px, 94vw); }
+.data-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+.data-list::-webkit-scrollbar { width: 4px; }
+.data-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.data-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+.data-item-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.data-item-key { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); }
+.data-item-val { font-size: 0.8rem; color: var(--text); word-break: break-all; }
+.data-item-del { background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; outline: none; transition: color 0.2s, background 0.2s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; line-height: 1; }
+.data-item-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+.data-item-del:focus:not(:focus-visible) { outline: none; }
+.data-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 16px 0; }
+.storage-stat { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.storage-stat-row { display: flex; justify-content: space-between; align-items: baseline; }
+.storage-stat-label { font-size: 0.78rem; color: var(--text-muted); }
+.storage-stat-value { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text); }
+.storage-bar-wrap { width: 100%; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.storage-bar { height: 100%; border-radius: 99px; background: #3b82f6; transition: width 0.4s ease, background 0.3s; }
+.storage-bar.warn { background: #f59e0b; }
+.storage-bar.danger { background: #ef4444; }
+.storage-stat-note { font-size: 0.72rem; color: var(--text-muted); } { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0; }
 @media print {
   body > *:not(#printWrap) { display: none !important; }
   #printWrap { display: block !important; background: #fff; color: #111; font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 0; width: 100%; height: 100%; }
@@ -222,7 +265,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .today .day-num, .today .all-day-num { color: #3b82f6; font-weight: 700; }
 .sun .day-num, .sun .all-day-num { color: var(--休); opacity: 0.7; }
 .sat .day-num, .sat .all-day-num { color: var(--朝); opacity: 0.7; }
-.site-footer {text-align: center;margin-top: 40px;padding: 20px 0;color: var(--text-muted);font-size: 0.75rem;}
+.site-footer { text-align: center; margin-top: 40px; padding: 20px 0; color: var(--text-muted); font-size: 0.75rem; }
 </style>
 </head>
 <body>
@@ -234,20 +277,17 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   <div class="ctrl-group">
     <label>班</label>
     <select id="teamSelect">
-      <option value="A">A班</option>
-      <option value="B">B班</option>
-      <option value="C">C班</option>
-      <option value="D">D班</option>
+      <option value="A">A班</option><option value="B">B班</option>
+      <option value="C">C班</option><option value="D">D班</option>
       <option value="ALL">全班</option>
     </select>
   </div>
   <div class="ctrl-group">
     <label>表示月数</label>
     <select id="monthsToShow">
-      <option>1</option><option selected>2</option><option>3</option>
-      <option>4</option><option>5</option><option>6</option>
-      <option>7</option><option>8</option><option>9</option>
-      <option>10</option><option>11</option><option>12</option>
+      <option>1</option><option selected>2</option><option>3</option><option>4</option>
+      <option>5</option><option>6</option><option>7</option><option>8</option>
+      <option>9</option><option>10</option><option>11</option><option>12</option>
     </select>
   </div>
   <div class="ctrl-group month-nav">
@@ -267,17 +307,14 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   </div>
   <div class="ctrl-group">
     <button class="news-btn" id="openNewsModal">
-      お知らせ
-      <span class="news-badge" id="newsBadge"></span>
+      お知らせ<span class="news-badge" id="newsBadge"></span>
     </button>
   </div>
   <div class="ctrl-group">
-    <button class="theme-btn" id="themeToggle" title="ライト/ダーク切替" aria-label="テーマ切替">
-      <span class="theme-btn-track">
-        <svg class="theme-btn-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg class="theme-btn-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </span>
-      <span class="theme-btn-thumb"></span>
+    <button class="settings-btn" id="openSettingsModal" title="設定" aria-label="設定">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
     </button>
   </div>
 </div>
@@ -293,10 +330,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <div class="modal-overlay" id="printModal">
   <div class="modal">
     <h2>印刷する月を選択</h2>
-    <div class="modal-row">
-      <label>年</label>
-      <select id="printYear"></select>
-    </div>
+    <div class="modal-row"><label>年</label><select id="printYear"></select></div>
     <div class="modal-row">
       <label>月</label>
       <select id="printMonth">
@@ -309,8 +343,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="modal-row">
       <label>向き</label>
       <select id="printOrientation">
-        <option value="landscape">横向き</option>
-        <option value="portrait">縦向き</option>
+        <option value="landscape">横向き</option><option value="portrait">縦向き</option>
       </select>
     </div>
     <div class="modal-btns">
@@ -324,7 +357,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   <div class="modal kyuuka-modal">
     <h2>有給管理</h2>
     <div class="modal-row">
-      <label style="min-width:auto;font-size:0.8rem;color:var(--text-muted)">下記を押して日付を追加</br></label>
+      <label style="min-width:auto;font-size:0.8rem;color:var(--text-muted)">日付を追加</label>
     </div>
     <div class="modal-row">
       <input type="date" class="kyuuka-input" id="kyuukaDateInput" />
@@ -333,6 +366,86 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="kyuuka-list" id="kyuukaList"></div>
     <div class="modal-btns">
       <button class="btn-cancel" id="closeKyuukaModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal settings-modal">
+    <h2>設定</h2>
+
+    <div class="settings-section">
+      <div class="settings-section-title">表示</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">カラーテーマ</div>
+          <div class="settings-row-sub" id="themeModeLabel">ダークモード</div>
+        </div>
+        <div class="theme-toggle-wrap">
+          <button class="theme-toggle-btn" id="themeToggleInSettings" aria-label="テーマ切替">
+            <span class="tt-track">
+              <svg class="tt-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              <svg class="tt-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </span>
+            <span class="tt-thumb"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">有給の自動削除</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">自動削除</div>
+          <div class="settings-row-sub">過去の有給を自動で削除する</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="autoPurgeToggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="settings-row" id="purgeTimingRow">
+        <div class="settings-row-label">削除タイミング</div>
+        <select class="settings-select" id="purgeTimingSelect">
+          <option value="month">月が替わったら</option>
+          <option value="day">有給日が過ぎたら</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">データ</div>
+      <div class="settings-row">
+        <div class="settings-row-label">保存データを管理する</div>
+        <button class="btn-cancel" id="openDataModal" style="padding:6px 14px;font-size:0.8rem;">管理</button>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeSettingsModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dataModal">
+  <div class="modal data-modal">
+    <h2>データ管理</h2>
+    <div class="storage-stat" id="storageStat">
+      <div class="storage-stat-row">
+        <span class="storage-stat-label">このサイト内での現在使用量</span>
+        <span class="storage-stat-value" id="storageUsed">— KB</span>
+      </div>
+      <div class="storage-bar-wrap"><div class="storage-bar" id="storageBar" style="width:0%"></div></div>
+      <div class="storage-stat-row">
+        <span class="storage-stat-note" id="storageNote">上限 5 MB</span>
+        <span class="storage-stat-note" id="storageRemain">残り — MB</span>
+      </div>
+    </div>
+    <div class="data-list" id="dataList"></div>
+    <div class="modal-btns">
+      <button class="btn-danger" id="deleteAllDataBtn">すべて削除</button>
+      <button class="btn-cancel" id="closeDataModal">閉じる</button>
     </div>
   </div>
 </div>
@@ -352,40 +465,46 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 (() => {
   const NEWS_DATA = [
     {
+      date: "2026-06-12",
+      type: "update",
+      title: "設定ボタン・データ管理を追加",
+      body: "設定ボタンからテーマ切替・有給自動削除設定が可能になりました。データ管理から保存データの確認・個別削除・全削除ができます。<br>ローカルストレージを使用しているため</br>このサイトでは5.00 MBまで保存が可能です。</br>"
+    },
+    {
       date: "2026-06-11",
       type: "notice",
       title: "カレンダーショートカット作成方法",
       body: "【iPhone / iPad（iOS）】<br>1. Safariでこのサイトを開く<br>2. 画面下部の共有ボタンをタップ<br>3. 「ホーム画面に追加」を選択<br>4. 「追加」をタップ<br><br>【Android】<br>1. Chromeでこのサイトを開く<br>2. 画面右上の︙メニューをタップ<br>3. 「ホーム画面に追加」または「アプリをインストール」を選択<br>4. 「追加」をタップ<br><br>※プライベートモード（シークレットモード）で開くと、保存しているデータが表示されないのでご注意ください。"
     },
     {
-      date:  "2026-06-11",
-      type:  "update",
+      date: "2026-06-11",
+      type: "update",
       title: "有給追加・表示月数保存追加",
-      body:  "有給をモーダルから追加・削除できます。月が替わると前月以前の有給データを自動削除。表示月数がブラウザに保存されます。"
+      body: "有給をモーダルから追加・削除できます。月が替わると前月以前の有給データを自動削除。表示月数がブラウザに保存されます。"
     },
     {
-      date:  "2026-06-08",
-      type:  "update",
+      date: "2026-06-08",
+      type: "update",
       title: "ライト/ダークモード切替を追加",
-      body:  "コントロールバーのトグルスイッチでモードを切り替えられます。"
+      body: "設定ボタンのトグルスイッチでモードを切り替えられます。"
     },
     {
-      date:  "2026-06-08",
-      type:  "update",
+      date: "2026-06-08",
+      type: "update",
       title: "今月に戻るボタンを追加",
-      body:  "コントロールバーに「今月」ボタンを追加しました。"
+      body: "コントロールバーに「今月」ボタンを追加しました。"
     },
     {
-      date:  "2026-06-08",
-      type:  "update",
+      date: "2026-06-08",
+      type: "update",
       title: "お知らせ機能を追加",
-      body:  "このお知らせパネルを実装しました。"
+      body: "このお知らせパネルを実装しました。"
     },
     {
-      date:  "2026-04-02",
-      type:  "notice",
+      date: "2026-04-02",
+      type: "notice",
       title: "カレンダー公開",
-      body:  "A・B・C・D班のシフトカレンダーを公開しました。"
+      body: "A・B・C・D班のシフトカレンダーを公開しました。"
     }
   ];
 
@@ -436,10 +555,34 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     "2030-11-23":"勤労感謝の日"
   };
 
+  const KEYS = {
+    team:        "shiftTeam",
+    months:      "shiftMonths",
+    theme:       "shiftTheme",
+    kyuuka:      "shiftKyuuka",
+    newsRead:    "shiftNewsRead",
+    autoPurge:   "shiftAutoPurge",
+    purgeTiming: "shiftPurgeTiming"
+  };
+
+  const KEY_LABELS = {
+    [KEYS.team]:        "選択班",
+    [KEYS.months]:      "表示月数",
+    [KEYS.theme]:       "カラーテーマ",
+    [KEYS.kyuuka]:      "有給データ",
+    [KEYS.newsRead]:    "お知らせ既読",
+    [KEYS.autoPurge]:   "有給自動削除",
+    [KEYS.purgeTiming]: "削除タイミング"
+  };
+
   function dateKey(date) {
     return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
   }
   function holidayName(date) { return HOLIDAYS[dateKey(date)] || null; }
+
+  const today = new Date();
+  let startYear  = today.getFullYear();
+  let startMonth = today.getMonth();
 
   const monthsSelect    = document.getElementById('monthsToShow');
   const teamSelect      = document.getElementById('teamSelect');
@@ -461,17 +604,25 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const closeNewsBtn    = document.getElementById('closeNewsModal');
   const newsBadge       = document.getElementById('newsBadge');
   const newsList        = document.getElementById('newsList');
-  const themeToggle     = document.getElementById('themeToggle');
   const kyuukaModal     = document.getElementById('kyuukaModal');
   const openKyuukaBtn   = document.getElementById('openKyuukaModal');
   const closeKyuukaBtn  = document.getElementById('closeKyuukaModal');
   const kyuukaDateInput = document.getElementById('kyuukaDateInput');
   const kyuukaAddBtn    = document.getElementById('kyuukaAddBtn');
   const kyuukaListEl    = document.getElementById('kyuukaList');
-
-  const today = new Date();
-  let startYear  = today.getFullYear();
-  let startMonth = today.getMonth();
+  const settingsModal   = document.getElementById('settingsModal');
+  const openSettingsBtn = document.getElementById('openSettingsModal');
+  const closeSettingsBtn= document.getElementById('closeSettingsModal');
+  const themeToggleBtn  = document.getElementById('themeToggleInSettings');
+  const themeModeLabel  = document.getElementById('themeModeLabel');
+  const autoPurgeToggle = document.getElementById('autoPurgeToggle');
+  const purgeTimingRow  = document.getElementById('purgeTimingRow');
+  const purgeTimingSelect=document.getElementById('purgeTimingSelect');
+  const openDataBtn     = document.getElementById('openDataModal');
+  const dataModal       = document.getElementById('dataModal');
+  const closeDataBtn    = document.getElementById('closeDataModal');
+  const dataListEl      = document.getElementById('dataList');
+  const deleteAllBtn    = document.getElementById('deleteAllDataBtn');
 
   for (let y = today.getFullYear() - 1; y <= today.getFullYear() + 1; y++) {
     const o = document.createElement('option');
@@ -481,20 +632,39 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   }
   printMonthSel.value = today.getMonth();
 
-  const savedTeam = localStorage.getItem("shiftTeam");
+  const savedTeam = localStorage.getItem(KEYS.team);
   if (savedTeam && (teamBaseDates[savedTeam] || savedTeam === "ALL")) teamSelect.value = savedTeam;
-
-  const savedMonths = localStorage.getItem("shiftMonths");
+  const savedMonths = localStorage.getItem(KEYS.months);
   if (savedMonths) monthsSelect.value = savedMonths;
-
-  const savedTheme = localStorage.getItem("shiftTheme");
+  const savedTheme = localStorage.getItem(KEYS.theme);
   if (savedTheme === "light") document.documentElement.classList.add("light");
+  const savedAutoPurge = localStorage.getItem(KEYS.autoPurge);
+  autoPurgeToggle.checked = savedAutoPurge !== "off";
+  const savedTiming = localStorage.getItem(KEYS.purgeTiming) || "month";
+  purgeTimingSelect.value = savedTiming;
+  purgeTimingRow.style.opacity = autoPurgeToggle.checked ? "1" : "0.4";
+  purgeTimingRow.style.pointerEvents = autoPurgeToggle.checked ? "auto" : "none";
 
-  themeToggle.addEventListener('click', () => {
+  function updateThemeLabel() {
+    themeModeLabel.textContent = document.documentElement.classList.contains("light") ? "ライトモード" : "ダークモード";
+  }
+  updateThemeLabel();
+
+  themeToggleBtn.addEventListener('click', () => {
     document.documentElement.classList.toggle("light");
     const isLight = document.documentElement.classList.contains("light");
-    localStorage.setItem("shiftTheme", isLight ? "light" : "dark");
-    setTimeout(() => themeToggle.blur(), 100);
+    localStorage.setItem(KEYS.theme, isLight ? "light" : "dark");
+    updateThemeLabel();
+    setTimeout(() => themeToggleBtn.blur(), 100);
+  });
+
+  autoPurgeToggle.addEventListener('change', () => {
+    localStorage.setItem(KEYS.autoPurge, autoPurgeToggle.checked ? "on" : "off");
+    purgeTimingRow.style.opacity = autoPurgeToggle.checked ? "1" : "0.4";
+    purgeTimingRow.style.pointerEvents = autoPurgeToggle.checked ? "auto" : "none";
+  });
+  purgeTimingSelect.addEventListener('change', () => {
+    localStorage.setItem(KEYS.purgeTiming, purgeTimingSelect.value);
   });
 
   function diffDays(a, b) {
@@ -505,20 +675,27 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     return cycle[((diffDays(base, date) % 8) + 8) % 8];
   }
 
-  const KYUUKA_KEY = "shiftKyuuka";
-  function loadKyuuka() {
-    try { return JSON.parse(localStorage.getItem(KYUUKA_KEY) || "[]"); } catch { return []; }
-  }
-  function saveKyuuka(arr) { localStorage.setItem(KYUUKA_KEY, JSON.stringify(arr)); }
+  function loadKyuuka() { try { return JSON.parse(localStorage.getItem(KEYS.kyuuka) || "[]"); } catch { return []; } }
+  function saveKyuuka(arr) { localStorage.setItem(KEYS.kyuuka, JSON.stringify(arr)); }
+
   function purgePastKyuuka() {
-    const thisMonth = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
-    const filtered = loadKyuuka().filter(d => d.slice(0,7) >= thisMonth);
+    if (localStorage.getItem(KEYS.autoPurge) === "off") return;
+    const timing = localStorage.getItem(KEYS.purgeTiming) || "month";
+    let threshold;
+    if (timing === "day") {
+      threshold = dateKey(today);
+    } else {
+      threshold = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+    }
+    const filtered = timing === "day"
+      ? loadKyuuka().filter(d => d >= threshold)
+      : loadKyuuka().filter(d => d.slice(0,7) >= threshold);
     saveKyuuka(filtered);
   }
   purgePastKyuuka();
+
   function isKyuuka(date) {
-    const team = teamSelect.value;
-    if (team === 'ALL') return false;
+    if (teamSelect.value === 'ALL') return false;
     return loadKyuuka().includes(dateKey(date));
   }
 
@@ -535,8 +712,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       row.innerHTML = `<span class="kyuuka-list-item-date">${d.replace(/-/g,'/')}</span><button class="kyuuka-list-item-del" data-date="${d}" aria-label="削除">✕</button>`;
       row.querySelector('.kyuuka-list-item-del').addEventListener('click', () => {
         saveKyuuka(loadKyuuka().filter(x => x !== d));
-        renderKyuukaList();
-        render();
+        renderKyuukaList(); render();
       });
       kyuukaListEl.appendChild(row);
     });
@@ -548,16 +724,86 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     const arr = loadKyuuka();
     if (!arr.includes(val)) { arr.push(val); saveKyuuka(arr); }
     kyuukaDateInput.value = '';
-    renderKyuukaList();
-    render();
+    renderKyuukaList(); render();
+  });
+
+  function calcStorageStats() {
+    const MAX_BYTES = 5 * 1024 * 1024;
+    let appBytes = 0;
+    Object.values(KEYS).forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v) appBytes += (k.length + v.length) * 2;
+    });
+    let totalBytes = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      const v = localStorage.getItem(k);
+      totalBytes += (k.length + v.length) * 2;
+    }
+    const pct = Math.min((totalBytes / MAX_BYTES) * 100, 100);
+    const appKB = (appBytes / 1024).toFixed(2);
+    const remainMB = ((MAX_BYTES - totalBytes) / 1024 / 1024).toFixed(2);
+    document.getElementById('storageUsed').textContent = `${appKB} KB`;
+    document.getElementById('storageRemain').textContent = `残り ${remainMB} MB`;
+    const bar = document.getElementById('storageBar');
+    bar.style.width = pct + '%';
+    bar.className = 'storage-bar' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+    document.getElementById('storageNote').textContent = `全体 ${(totalBytes/1024).toFixed(1)} KB / 上限 5 MB`;
+  }
+
+  function renderDataList() {
+    calcStorageStats();
+    dataListEl.innerHTML = '';
+    const allKeys = Object.values(KEYS);
+    const existing = allKeys.filter(k => localStorage.getItem(k) !== null);
+    if (existing.length === 0) {
+      dataListEl.innerHTML = '<div class="data-empty">保存データはありません</div>';
+      return;
+    }
+    existing.forEach(k => {
+      const raw = localStorage.getItem(k);
+      let display = raw;
+      if (k === KEYS.kyuuka) {
+        try {
+          const arr = JSON.parse(raw);
+          display = arr.length > 0 ? arr.join(', ') : '（なし）';
+        } catch { display = raw; }
+      }
+      const item = document.createElement('div');
+      item.className = 'data-item';
+      item.innerHTML = `
+        <div class="data-item-info">
+          <span class="data-item-key">${KEY_LABELS[k] || k}</span>
+          <span class="data-item-val">${display}</span>
+        </div>
+        <button class="data-item-del" aria-label="削除">✕</button>`;
+      item.querySelector('.data-item-del').addEventListener('click', () => {
+        localStorage.removeItem(k);
+        renderDataList(); render();
+      });
+      dataListEl.appendChild(item);
+    });
+  }
+
+  deleteAllBtn.addEventListener('click', () => {
+    if (!confirm('すべての保存データを削除しますか？')) return;
+    Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+    renderDataList(); render();
   });
 
   openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); kyuukaModal.classList.add('open'); });
   closeKyuukaBtn.addEventListener('click', () => kyuukaModal.classList.remove('open'));
   kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) kyuukaModal.classList.remove('open'); });
-  [openKyuukaBtn, closeKyuukaBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  const STORAGE_KEY_NEWS = "shiftNewsRead";
+  openSettingsBtn.addEventListener('click', () => { updateThemeLabel(); settingsModal.classList.add('open'); });
+  closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('open'));
+  settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('open'); });
+
+  openDataBtn.addEventListener('click', () => { renderDataList(); dataModal.classList.add('open'); });
+  closeDataBtn.addEventListener('click', () => dataModal.classList.remove('open'));
+  dataModal.addEventListener('click', e => { if (e.target === dataModal) dataModal.classList.remove('open'); });
+
+  const STORAGE_KEY_NEWS = KEYS.newsRead;
   function getReadDate() { return localStorage.getItem(STORAGE_KEY_NEWS) || null; }
   function markAllRead() { localStorage.setItem(STORAGE_KEY_NEWS, NEWS_DATA[0]?.date || ""); }
   function countUnread() { const r = getReadDate(); return r ? NEWS_DATA.filter(n => n.date > r).length : NEWS_DATA.length; }
@@ -588,12 +834,14 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   openNewsBtn.addEventListener('click', () => { buildNewsList(); newsModal.classList.add('open'); markAllRead(); updateBadge(); });
   closeNewsBtn.addEventListener('click', () => newsModal.classList.remove('open'));
   newsModal.addEventListener('click', e => { if (e.target === newsModal) newsModal.classList.remove('open'); });
-  [openNewsBtn, closeNewsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
+
+  [openKyuukaBtn, closeKyuukaBtn, openSettingsBtn, closeSettingsBtn,
+   openNewsBtn, closeNewsBtn, openDataBtn, closeDataBtn, deleteAllBtn, themeToggleBtn
+  ].forEach(btn => btn && btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   goTodayBtn.addEventListener('click', () => { startYear = today.getFullYear(); startMonth = today.getMonth(); render(); });
   goTodayBtn.addEventListener('pointerup', () => setTimeout(() => goTodayBtn.blur(), 100));
   goTodayBtn.addEventListener('touchend', e => { e.preventDefault(); goTodayBtn.click(); goTodayBtn.blur(); });
-
   [prevBtn, nextBtn].forEach(btn => {
     btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100));
     btn.addEventListener('touchend', e => { e.preventDefault(); btn.click(); btn.blur(); });
@@ -617,8 +865,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         if (tr.children.length === 7) { tbody.appendChild(tr); tr = document.createElement('tr'); }
         const cur = new Date(first.getFullYear(), first.getMonth(), d);
         const dow = cur.getDay(); const holi = holidayName(cur);
-        const kyuuka = isKyuuka(cur);
-        const s = kyuuka ? '有給' : getShift(team, cur);
+        const s = isKyuuka(cur) ? '有給' : getShift(team, cur);
         const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
@@ -710,45 +957,34 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   openPrintBtn.addEventListener('click', () => printModal.classList.add('open'));
   closePrintBtn.addEventListener('click', () => printModal.classList.remove('open'));
   printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
-
   doPrintBtn.addEventListener('click', () => {
     const y = parseInt(printYearSel.value, 10);
     const m = parseInt(printMonthSel.value, 10);
     const orient = printOrientSel.value;
-    let pageStyle = document.getElementById('dynamicPageStyle');
-    if (!pageStyle) { pageStyle = document.createElement('style'); pageStyle.id = 'dynamicPageStyle'; document.head.appendChild(pageStyle); }
-    pageStyle.textContent = `@page { size: A4 ${orient}; margin: 8mm 10mm; }`;
+    let ps = document.getElementById('dynamicPageStyle');
+    if (!ps) { ps = document.createElement('style'); ps.id = 'dynamicPageStyle'; document.head.appendChild(ps); }
+    ps.textContent = `@page { size: A4 ${orient}; margin: 8mm 10mm; }`;
     printWrap.innerHTML = buildPrintHTML(y, m);
     printWrap.className = `orient-${orient}`;
     printWrap.style.display = 'block';
     printModal.classList.remove('open');
     setTimeout(() => { window.print(); setTimeout(() => { printWrap.style.display = 'none'; }, 500); }, 150);
   });
-
   [openPrintBtn, closePrintBtn, doPrintBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  teamSelect.onchange = () => { localStorage.setItem("shiftTeam", teamSelect.value); render(); };
-  monthsSelect.onchange = () => { localStorage.setItem("shiftMonths", monthsSelect.value); render(); };
+  teamSelect.onchange = () => { localStorage.setItem(KEYS.team, teamSelect.value); render(); };
+  monthsSelect.onchange = () => { localStorage.setItem(KEYS.months, monthsSelect.value); render(); };
   prevBtn.onclick = () => { startMonth--; if (startMonth < 0) { startMonth = 11; startYear--; } render(); };
   nextBtn.onclick = () => { startMonth++; if (startMonth > 11) { startMonth = 0; startYear++; } render(); };
 
   container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
   fetch('day.json')
     .then(r => r.json())
-    .then(data => {
-      teamBaseDates = { ...teamBaseDates, ...data };
-    })
+    .then(data => { teamBaseDates = { ...teamBaseDates, ...data }; })
     .catch(() => {})
-    .finally(() => {
-      updateBadge();
-      render();
-    });
+    .finally(() => { updateBadge(); render(); });
 })();
 </script>
-
-<footer class="site-footer">
-  <small>Created by S │ THX</small>
-</footer>
-
+<footer class="site-footer"><small>Created by S │ THX</small></footer>
 </body>
 </html>
