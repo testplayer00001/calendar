@@ -86,9 +86,9 @@ html.light .news-btn:hover { background: #bbf7d0; }
 .settings-btn:hover { border-color: #3b82f6; color: var(--text); }
 .settings-btn:focus:not(:focus-visible) { outline: none; }
 .settings-btn svg { width: 16px; height: 16px; }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; overscroll-behavior: contain; }
 .modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 32px; width: min(420px, 92vw); display: flex; flex-direction: column; gap: 20px; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 32px; width: min(420px, 92vw); display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; overscroll-behavior: contain; }
 .modal h2 { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: 0.08em; text-align: center; }
 .modal-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .modal-row label { font-size: 0.8rem; color: var(--text-muted); min-width: 60px; }
@@ -433,7 +433,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <h2>データ管理</h2>
     <div class="storage-stat" id="storageStat">
       <div class="storage-stat-row">
-        <span class="storage-stat-label">このサイト内での現在使用量</span>
+        <span class="storage-stat-label">このサイトでの使用量</span>
         <span class="storage-stat-value" id="storageUsed">— KB</span>
       </div>
       <div class="storage-bar-wrap"><div class="storage-bar" id="storageBar" style="width:0%"></div></div>
@@ -513,47 +513,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   let teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
   const teams = ['A','B','C','D'];
 
-  const HOLIDAYS = {
-    "2025-01-01":"元日","2025-01-13":"成人の日","2025-02-11":"建国記念の日",
-    "2025-02-23":"天皇誕生日","2025-02-24":"振替休日","2025-03-20":"春分の日",
-    "2025-04-29":"昭和の日","2025-05-03":"憲法記念日","2025-05-04":"みどりの日",
-    "2025-05-05":"こどもの日","2025-05-06":"振替休日","2025-07-21":"海の日",
-    "2025-08-11":"山の日","2025-09-15":"敬老の日","2025-09-23":"秋分の日",
-    "2025-10-13":"スポーツの日","2025-11-03":"文化の日","2025-11-23":"勤労感謝の日",
-    "2025-11-24":"振替休日",
-    "2026-01-01":"元日","2026-01-12":"成人の日","2026-02-11":"建国記念の日",
-    "2026-02-23":"天皇誕生日","2026-03-20":"春分の日","2026-04-29":"昭和の日",
-    "2026-05-03":"憲法記念日","2026-05-04":"みどりの日","2026-05-05":"こどもの日",
-    "2026-05-06":"振替休日","2026-07-20":"海の日","2026-08-11":"山の日",
-    "2026-09-21":"敬老の日","2026-09-22":"国民の休日","2026-09-23":"秋分の日",
-    "2026-10-12":"スポーツの日","2026-11-03":"文化の日","2026-11-23":"勤労感謝の日",
-    "2027-01-01":"元日","2027-01-11":"成人の日","2027-02-11":"建国記念の日",
-    "2027-02-23":"天皇誕生日","2027-02-24":"振替休日","2027-03-21":"春分の日",
-    "2027-03-22":"振替休日","2027-04-29":"昭和の日","2027-05-03":"憲法記念日",
-    "2027-05-04":"みどりの日","2027-05-05":"こどもの日","2027-07-19":"海の日",
-    "2027-08-11":"山の日","2027-09-20":"敬老の日","2027-09-23":"秋分の日",
-    "2027-10-11":"スポーツの日","2027-11-03":"文化の日","2027-11-23":"勤労感謝の日",
-    "2028-01-01":"元日","2028-01-10":"成人の日","2028-02-11":"建国記念の日",
-    "2028-02-23":"天皇誕生日","2028-03-20":"春分の日","2028-04-29":"昭和の日",
-    "2028-05-03":"憲法記念日","2028-05-04":"みどりの日","2028-05-05":"こどもの日",
-    "2028-07-17":"海の日","2028-08-11":"山の日","2028-09-18":"敬老の日",
-    "2028-09-21":"国民の休日","2028-09-22":"秋分の日","2028-10-09":"スポーツの日",
-    "2028-11-03":"文化の日","2028-11-23":"勤労感謝の日",
-    "2029-01-01":"元日","2029-01-08":"成人の日","2029-02-11":"建国記念の日",
-    "2029-02-12":"振替休日","2029-02-23":"天皇誕生日","2029-03-20":"春分の日",
-    "2029-04-29":"昭和の日","2029-04-30":"振替休日","2029-05-03":"憲法記念日",
-    "2029-05-04":"みどりの日","2029-05-05":"こどもの日","2029-07-16":"海の日",
-    "2029-08-11":"山の日","2029-09-17":"敬老の日","2029-09-23":"秋分の日",
-    "2029-09-24":"振替休日","2029-10-08":"スポーツの日","2029-11-03":"文化の日",
-    "2029-11-23":"勤労感謝の日",
-    "2030-01-01":"元日","2030-01-14":"成人の日","2030-02-11":"建国記念の日",
-    "2030-02-23":"天皇誕生日","2030-03-20":"春分の日","2030-04-29":"昭和の日",
-    "2030-05-03":"憲法記念日","2030-05-04":"みどりの日","2030-05-05":"こどもの日",
-    "2030-05-06":"振替休日","2030-07-15":"海の日","2030-08-11":"山の日",
-    "2030-08-12":"振替休日","2030-09-16":"敬老の日","2030-09-23":"秋分の日",
-    "2030-10-14":"スポーツの日","2030-11-03":"文化の日","2030-11-04":"振替休日",
-    "2030-11-23":"勤労感謝の日"
-  };
+  let HOLIDAYS = {};
 
   const KEYS = {
     team:        "shiftTeam",
@@ -644,6 +604,17 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   purgeTimingSelect.value = savedTiming;
   purgeTimingRow.style.opacity = autoPurgeToggle.checked ? "1" : "0.4";
   purgeTimingRow.style.pointerEvents = autoPurgeToggle.checked ? "auto" : "none";
+
+  function openModal(modal) {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(modal) {
+    modal.classList.remove('open');
+    if (!document.querySelector('.modal-overlay.open')) {
+      document.body.style.overflow = '';
+    }
+  }
 
   function updateThemeLabel() {
     themeModeLabel.textContent = document.documentElement.classList.contains("light") ? "ライトモード" : "ダークモード";
@@ -791,17 +762,17 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     renderDataList(); render();
   });
 
-  openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); kyuukaModal.classList.add('open'); });
-  closeKyuukaBtn.addEventListener('click', () => kyuukaModal.classList.remove('open'));
-  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) kyuukaModal.classList.remove('open'); });
+  openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); openModal(kyuukaModal); });
+  closeKyuukaBtn.addEventListener('click', () => closeModal(kyuukaModal));
+  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal); });
 
-  openSettingsBtn.addEventListener('click', () => { updateThemeLabel(); settingsModal.classList.add('open'); });
-  closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('open'));
-  settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('open'); });
+  openSettingsBtn.addEventListener('click', () => { updateThemeLabel(); openModal(settingsModal); });
+  closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
+  settingsModal.addEventListener('click', e => { if (e.target === settingsModal) closeModal(settingsModal); });
 
-  openDataBtn.addEventListener('click', () => { renderDataList(); dataModal.classList.add('open'); });
-  closeDataBtn.addEventListener('click', () => dataModal.classList.remove('open'));
-  dataModal.addEventListener('click', e => { if (e.target === dataModal) dataModal.classList.remove('open'); });
+  openDataBtn.addEventListener('click', () => { renderDataList(); openModal(dataModal); });
+  closeDataBtn.addEventListener('click', () => closeModal(dataModal));
+  dataModal.addEventListener('click', e => { if (e.target === dataModal) closeModal(dataModal); });
 
   const STORAGE_KEY_NEWS = KEYS.newsRead;
   function getReadDate() { return localStorage.getItem(STORAGE_KEY_NEWS) || null; }
@@ -831,9 +802,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     });
   }
 
-  openNewsBtn.addEventListener('click', () => { buildNewsList(); newsModal.classList.add('open'); markAllRead(); updateBadge(); });
-  closeNewsBtn.addEventListener('click', () => newsModal.classList.remove('open'));
-  newsModal.addEventListener('click', e => { if (e.target === newsModal) newsModal.classList.remove('open'); });
+  openNewsBtn.addEventListener('click', () => { buildNewsList(); openModal(newsModal); markAllRead(); updateBadge(); });
+  closeNewsBtn.addEventListener('click', () => closeModal(newsModal));
+  newsModal.addEventListener('click', e => { if (e.target === newsModal) closeModal(newsModal); });
 
   [openKyuukaBtn, closeKyuukaBtn, openSettingsBtn, closeSettingsBtn,
    openNewsBtn, closeNewsBtn, openDataBtn, closeDataBtn, deleteAllBtn, themeToggleBtn
@@ -954,9 +925,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       </table>`;
   }
 
-  openPrintBtn.addEventListener('click', () => printModal.classList.add('open'));
-  closePrintBtn.addEventListener('click', () => printModal.classList.remove('open'));
-  printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
+  openPrintBtn.addEventListener('click', () => openModal(printModal));
+  closePrintBtn.addEventListener('click', () => closeModal(printModal));
+  printModal.addEventListener('click', e => { if (e.target === printModal) closeModal(printModal); });
   doPrintBtn.addEventListener('click', () => {
     const y = parseInt(printYearSel.value, 10);
     const m = parseInt(printMonthSel.value, 10);
@@ -967,7 +938,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     printWrap.innerHTML = buildPrintHTML(y, m);
     printWrap.className = `orient-${orient}`;
     printWrap.style.display = 'block';
-    printModal.classList.remove('open');
+    closeModal(printModal);
     setTimeout(() => { window.print(); setTimeout(() => { printWrap.style.display = 'none'; }, 500); }, 150);
   });
   [openPrintBtn, closePrintBtn, doPrintBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
@@ -978,11 +949,13 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   nextBtn.onclick = () => { startMonth++; if (startMonth > 11) { startMonth = 0; startYear++; } render(); };
 
   container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
-  fetch('day.json')
-    .then(r => r.json())
-    .then(data => { teamBaseDates = { ...teamBaseDates, ...data }; })
-    .catch(() => {})
-    .finally(() => { updateBadge(); render(); });
+  Promise.all([
+    fetch('day.json').then(r => r.json()).catch(() => ({})),
+    fetch('holiday.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([dayData, holidayData]) => {
+    teamBaseDates = { ...teamBaseDates, ...dayData };
+    HOLIDAYS = { ...HOLIDAYS, ...holidayData };
+  }).finally(() => { updateBadge(); render(); });
 })();
 </script>
 <footer class="site-footer"><small>Created by S │ THX</small></footer>
