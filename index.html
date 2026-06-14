@@ -476,12 +476,24 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsCustomTimeRow" style="display:none">
+    <div class="modal-row" id="icsCustomTimeRow" style="display:none;flex-direction:column;align-items:stretch;gap:8px;">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" style="flex:1;" />
+      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" />
+
       <label>勤務時間</label>
-      <input type="number" class="kyuuka-input" id="icsCustomDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
-      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input
+          type="number"
+          class="kyuuka-input"
+          id="icsCustomDuration"
+          value="8"
+          min="0.25"
+          max="24"
+          step="0.25"
+          style="flex:1;"
+        />
+        <span style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">時間</span>
+      </div>
     </div>
     <div class="settings-row">
       <div>
@@ -503,12 +515,24 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsHolidayTimeRow" style="display:none">
+    <div class="modal-row" id="icsHolidayTimeRow" style="display:none;flex-direction:column;align-items:stretch;gap:8px;">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" style="flex:1;" />
+      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" />
+
       <label>勤務時間</label>
-      <input type="number" class="kyuuka-input" id="icsHolidayDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
-      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input
+          type="number"
+          class="kyuuka-input"
+          id="icsHolidayDuration"
+          value="8"
+          min="0.25"
+          max="24"
+          step="0.25"
+          style="flex:1;"
+        />
+        <span style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">時間</span>
+      </div>
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" id="closeIcsModal">キャンセル</button>
@@ -572,7 +596,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       date: "2026-06-12",
       type: "update",
       title: "ICS（予定表）作成機能を追加",
-      body: "設定 → 「ICS作成」から、期間を指定してOutlookなどに取り込めるICSファイルを作成・ダウンロードできます。"
+      body: "設定 → 「ICS作成」から、期間を指定してOutlookなどに取り込めるICSファイルを作成ができます。<br><br>スマホ等で作成すると既存のカレンダーアプリに予定が追加されます。<br>※IOSのみ動作確認済み"
     },
     {
       date: "2026-06-12",
