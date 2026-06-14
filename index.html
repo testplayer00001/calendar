@@ -47,6 +47,10 @@ html.light {
   --有給-bg: rgba(5,150,105,0.1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 80px 20px 32px; -webkit-tap-highlight-color: transparent; transition: background 0.2s, color 0.2s; }
 header { text-align: center; margin-bottom: 40px; }
 header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: 0.1em; color: var(--text); margin-bottom: 8px; }
@@ -136,6 +140,7 @@ html:not(.light) .tag-maint  { color: #c4b5fd; }
 .news-item-title { font-size: 0.85rem; font-weight: 600; color: var(--text); line-height: 1.4; }
 .news-item-body  { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
 .kyuuka-modal { width: min(480px, 94vw); }
+.ics-modal { width: min(480px, 94vw); }
 .kyuuka-modal h2 { color: var(--有給); }
 .kyuuka-input { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; cursor: pointer; }
 .kyuuka-input:focus { border-color: var(--有給); }
@@ -192,6 +197,17 @@ html.light .theme-toggle-btn .tt-thumb { left: calc(100% - 21px); background: #f
 .data-item-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
 .data-item-del:focus:not(:focus-visible) { outline: none; }
 .data-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 16px 0; }
+.json-file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+.json-file-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.json-file-name { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text); }
+.json-file-desc { font-size: 0.72rem; color: var(--text-muted); }
+.json-file-status { font-size: 0.7rem; padding: 1px 7px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
+.json-file-status.ok { background: rgba(34,197,94,0.15); color: #15803d; }
+html:not(.light) .json-file-status.ok { color: #86efac; }
+.json-file-status.fail { background: rgba(239,68,68,0.12); color: #ef4444; }
+.json-view-modal { width: min(560px, 94vw); }
+.json-view-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+.json-view-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text); line-height: 1.6; max-height: 320px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
 .storage-stat { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
 .storage-stat-row { display: flex; justify-content: space-between; align-items: baseline; }
 .storage-stat-label { font-size: 0.78rem; color: var(--text-muted); }
@@ -422,8 +438,81 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       </div>
     </div>
 
+    <div class="settings-section">
+      <div class="settings-section-title">予定表 (ICS)</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Outlookカレンダー設定</div>
+          <div class="settings-row-sub">Outlook等で読み込めるICSファイルを作成</div>
+        </div>
+        <button class="btn-cancel" id="openIcsModal" style="padding:6px 14px;font-size:0.8rem;">ICS作成</button>
+      </div>
+    </div>
+
     <div class="modal-btns">
       <button class="btn-cancel" id="closeSettingsModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="icsModal">
+  <div class="modal ics-modal">
+    <h2>ICS作成</h2>
+    <div class="modal-row">
+      <label>開始日</label>
+      <input type="date" class="kyuuka-input" id="icsStartDate" />
+    </div>
+    <div class="modal-row">
+      <label>終了日</label>
+      <input type="date" class="kyuuka-input" id="icsEndDate" />
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">勤務時間を適用</div>
+        <div class="settings-row-sub">朝勤7:00～15:15などの時間を設定</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="icsApplyShiftTime" checked />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="modal-row" id="icsCustomTimeRow" style="display:none">
+      <label>開始時刻</label>
+      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" style="flex:1;" />
+      <label>勤務時間</label>
+      <input type="number" class="kyuuka-input" id="icsCustomDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">有給を含める</div>
+        <div class="settings-row-sub">有給の日を終日予定として追加</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="icsIncludeKyuuka" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">休日を含める</div>
+        <div class="settings-row-sub">「休」の日も予定として追加</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="icsIncludeHoliday" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="modal-row" id="icsHolidayTimeRow" style="display:none">
+      <label>開始時刻</label>
+      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" style="flex:1;" />
+      <label>勤務時間</label>
+      <input type="number" class="kyuuka-input" id="icsHolidayDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeIcsModal">キャンセル</button>
+      <button class="btn-print" id="generateIcsBtn">作成</button>
     </div>
   </div>
 </div>
@@ -443,9 +532,24 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       </div>
     </div>
     <div class="data-list" id="dataList"></div>
+
+    <div class="settings-section-title" style="margin-top:4px;">設定ファイル (JSON)</div>
+    <div class="data-list" id="jsonFileList"></div>
+
     <div class="modal-btns">
       <button class="btn-danger" id="deleteAllDataBtn">すべて削除</button>
       <button class="btn-cancel" id="closeDataModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="jsonViewModal">
+  <div class="modal json-view-modal">
+    <h2 id="jsonViewTitle">JSON</h2>
+    <div class="json-view-desc" id="jsonViewDesc"></div>
+    <pre class="json-view-content" id="jsonViewContent"></pre>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeJsonViewModal">閉じる</button>
     </div>
   </div>
 </div>
@@ -464,6 +568,12 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <script>
 (() => {
   const NEWS_DATA = [
+    {
+      date: "2026-06-12",
+      type: "update",
+      title: "ICS（予定表）作成機能を追加",
+      body: "設定 → 「ICS作成」から、期間を指定してOutlookなどに取り込めるICSファイルを作成・ダウンロードできます。"
+    },
     {
       date: "2026-06-12",
       type: "update",
@@ -519,7 +629,47 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   let teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
   const teams = ['A','B','C','D'];
 
-  let HOLIDAYS = {};
+  let HOLIDAYS = {
+    "2025-01-01":"元日","2025-01-13":"成人の日","2025-02-11":"建国記念の日",
+    "2025-02-23":"天皇誕生日","2025-02-24":"振替休日","2025-03-20":"春分の日",
+    "2025-04-29":"昭和の日","2025-05-03":"憲法記念日","2025-05-04":"みどりの日",
+    "2025-05-05":"こどもの日","2025-05-06":"振替休日","2025-07-21":"海の日",
+    "2025-08-11":"山の日","2025-09-15":"敬老の日","2025-09-23":"秋分の日",
+    "2025-10-13":"スポーツの日","2025-11-03":"文化の日","2025-11-23":"勤労感謝の日",
+    "2025-11-24":"振替休日",
+    "2026-01-01":"元日","2026-01-12":"成人の日","2026-02-11":"建国記念の日",
+    "2026-02-23":"天皇誕生日","2026-03-20":"春分の日","2026-04-29":"昭和の日",
+    "2026-05-03":"憲法記念日","2026-05-04":"みどりの日","2026-05-05":"こどもの日",
+    "2026-05-06":"振替休日","2026-07-20":"海の日","2026-08-11":"山の日",
+    "2026-09-21":"敬老の日","2026-09-22":"国民の休日","2026-09-23":"秋分の日",
+    "2026-10-12":"スポーツの日","2026-11-03":"文化の日","2026-11-23":"勤労感謝の日",
+    "2027-01-01":"元日","2027-01-11":"成人の日","2027-02-11":"建国記念の日",
+    "2027-02-23":"天皇誕生日","2027-02-24":"振替休日","2027-03-21":"春分の日",
+    "2027-03-22":"振替休日","2027-04-29":"昭和の日","2027-05-03":"憲法記念日",
+    "2027-05-04":"みどりの日","2027-05-05":"こどもの日","2027-07-19":"海の日",
+    "2027-08-11":"山の日","2027-09-20":"敬老の日","2027-09-23":"秋分の日",
+    "2027-10-11":"スポーツの日","2027-11-03":"文化の日","2027-11-23":"勤労感謝の日",
+    "2028-01-01":"元日","2028-01-10":"成人の日","2028-02-11":"建国記念の日",
+    "2028-02-23":"天皇誕生日","2028-03-20":"春分の日","2028-04-29":"昭和の日",
+    "2028-05-03":"憲法記念日","2028-05-04":"みどりの日","2028-05-05":"こどもの日",
+    "2028-07-17":"海の日","2028-08-11":"山の日","2028-09-18":"敬老の日",
+    "2028-09-21":"国民の休日","2028-09-22":"秋分の日","2028-10-09":"スポーツの日",
+    "2028-11-03":"文化の日","2028-11-23":"勤労感謝の日",
+    "2029-01-01":"元日","2029-01-08":"成人の日","2029-02-11":"建国記念の日",
+    "2029-02-12":"振替休日","2029-02-23":"天皇誕生日","2029-03-20":"春分の日",
+    "2029-04-29":"昭和の日","2029-04-30":"振替休日","2029-05-03":"憲法記念日",
+    "2029-05-04":"みどりの日","2029-05-05":"こどもの日","2029-07-16":"海の日",
+    "2029-08-11":"山の日","2029-09-17":"敬老の日","2029-09-23":"秋分の日",
+    "2029-09-24":"振替休日","2029-10-08":"スポーツの日","2029-11-03":"文化の日",
+    "2029-11-23":"勤労感謝の日",
+    "2030-01-01":"元日","2030-01-14":"成人の日","2030-02-11":"建国記念の日",
+    "2030-02-23":"天皇誕生日","2030-03-20":"春分の日","2030-04-29":"昭和の日",
+    "2030-05-03":"憲法記念日","2030-05-04":"みどりの日","2030-05-05":"こどもの日",
+    "2030-05-06":"振替休日","2030-07-15":"海の日","2030-08-11":"山の日",
+    "2030-08-12":"振替休日","2030-09-16":"敬老の日","2030-09-23":"秋分の日",
+    "2030-10-14":"スポーツの日","2030-11-03":"文化の日","2030-11-04":"振替休日",
+    "2030-11-23":"勤労感謝の日"
+  };
 
   const KEYS = {
     team:        "shiftTeam",
@@ -589,6 +739,27 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const closeDataBtn    = document.getElementById('closeDataModal');
   const dataListEl      = document.getElementById('dataList');
   const deleteAllBtn    = document.getElementById('deleteAllDataBtn');
+  const jsonFileListEl  = document.getElementById('jsonFileList');
+  const jsonViewModal   = document.getElementById('jsonViewModal');
+  const closeJsonViewBtn= document.getElementById('closeJsonViewModal');
+  const jsonViewTitle   = document.getElementById('jsonViewTitle');
+  const jsonViewDesc    = document.getElementById('jsonViewDesc');
+  const jsonViewContent = document.getElementById('jsonViewContent');
+  const icsModal        = document.getElementById('icsModal');
+  const openIcsBtn      = document.getElementById('openIcsModal');
+  const closeIcsBtn     = document.getElementById('closeIcsModal');
+  const generateIcsBtn  = document.getElementById('generateIcsBtn');
+  const icsStartDate    = document.getElementById('icsStartDate');
+  const icsEndDate      = document.getElementById('icsEndDate');
+  const icsApplyShiftTime = document.getElementById('icsApplyShiftTime');
+  const icsCustomTimeRow  = document.getElementById('icsCustomTimeRow');
+  const icsCustomTime     = document.getElementById('icsCustomTime');
+  const icsCustomDuration = document.getElementById('icsCustomDuration');
+  const icsIncludeKyuuka  = document.getElementById('icsIncludeKyuuka');
+  const icsIncludeHoliday = document.getElementById('icsIncludeHoliday');
+  const icsHolidayTimeRow = document.getElementById('icsHolidayTimeRow');
+  const icsHolidayTime    = document.getElementById('icsHolidayTime');
+  const icsHolidayDuration= document.getElementById('icsHolidayDuration');
 
   for (let y = today.getFullYear() - 1; y <= today.getFullYear() + 1; y++) {
     const o = document.createElement('option');
@@ -768,6 +939,45 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     renderDataList(); render();
   });
 
+  function renderJsonFileList() {
+    jsonFileListEl.innerHTML = '';
+    Object.entries(JSON_FILES).forEach(([name, info]) => {
+      const item = document.createElement('div');
+      item.className = 'json-file-item';
+      const statusClass = info.loaded ? 'ok' : 'fail';
+      const statusText = info.loaded ? '読込済' : '未読込';
+      item.innerHTML = `
+        <div class="json-file-info">
+          <span class="json-file-name">${name}</span>
+          <span class="json-file-desc">${info.desc}</span>
+        </div>
+        <span class="json-file-status ${statusClass}">${statusText}</span>`;
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => openJsonView(name));
+      jsonFileListEl.appendChild(item);
+    });
+  }
+
+  function openJsonView(name) {
+    const info = JSON_FILES[name];
+    jsonViewTitle.textContent = name;
+    jsonViewDesc.textContent = info.desc;
+    if (info.loaded) {
+      try {
+        jsonViewContent.textContent = JSON.stringify(JSON.parse(info.raw), null, 2);
+      } catch {
+        jsonViewContent.textContent = info.raw;
+      }
+    } else {
+      jsonViewContent.textContent = `${name} を読み込めませんでした。`;
+    }
+    openModal(jsonViewModal);
+  }
+
+  closeJsonViewBtn.addEventListener('click', () => closeModal(jsonViewModal));
+  jsonViewModal.addEventListener('click', e => { if (e.target === jsonViewModal) closeModal(jsonViewModal); });
+  closeJsonViewBtn.addEventListener('pointerup', () => setTimeout(() => closeJsonViewBtn.blur(), 100));
+
   openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); openModal(kyuukaModal); });
   closeKyuukaBtn.addEventListener('click', () => closeModal(kyuukaModal));
   kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal); });
@@ -776,9 +986,160 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
   settingsModal.addEventListener('click', e => { if (e.target === settingsModal) closeModal(settingsModal); });
 
-  openDataBtn.addEventListener('click', () => { renderDataList(); openModal(dataModal); });
+  openDataBtn.addEventListener('click', () => { renderDataList(); renderJsonFileList(); openModal(dataModal); });
   closeDataBtn.addEventListener('click', () => closeModal(dataModal));
   dataModal.addEventListener('click', e => { if (e.target === dataModal) closeModal(dataModal); });
+
+  const SHIFT_TIMES = {
+    '朝': { startH: 7,  startM: 0,  endH: 15, endM: 15, overnight: false },
+    '昼': { startH: 15, startM: 0,  endH: 22, endM: 45, overnight: false },
+    '夜': { startH: 22, startM: 30, endH: 7,  endM: 15, overnight: true  }
+  };
+  const SHIFT_LABELS = { '朝': '朝勤', '昼': '午後勤', '夜': '夜勤' };
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function icsDate(date) { return `${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}`; }
+  function icsDateTime(date, h, m) { return `${icsDate(date)}T${pad2(h)}${pad2(m)}00`; }
+  function icsDateTimeUTC(date) {
+    return `${date.getUTCFullYear()}${pad2(date.getUTCMonth()+1)}${pad2(date.getUTCDate())}T${pad2(date.getUTCHours())}${pad2(date.getUTCMinutes())}${pad2(date.getUTCSeconds())}Z`;
+  }
+
+  function buildTimedEvent(date, sH, sM, eH, eM, overnight, summary, uid) {
+    const dtstart = icsDateTime(date, sH, sM);
+    const endDate = new Date(date);
+    if (overnight) endDate.setDate(endDate.getDate() + 1);
+    const dtend = icsDateTime(endDate, eH, eM);
+    return { allDay: false, dtstart, dtend, summary, uid };
+  }
+  function buildAllDayEvent(date, summary, uid) {
+    const endDate = new Date(date);
+    endDate.setDate(endDate.getDate() + 1);
+    return { allDay: true, dtstart: icsDate(date), dtend: icsDate(endDate), summary, uid };
+  }
+
+  function buildICS(events) {
+    const dtstamp = icsDateTimeUTC(new Date());
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//ShiftCalendar//JP',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VTIMEZONE',
+      'TZID:Asia/Tokyo',
+      'BEGIN:STANDARD',
+      'DTSTART:19700101T000000',
+      'TZOFFSETFROM:+0900',
+      'TZOFFSETTO:+0900',
+      'TZNAME:JST',
+      'END:STANDARD',
+      'END:VTIMEZONE'
+    ];
+    events.forEach((ev) => {
+      lines.push('BEGIN:VEVENT');
+      lines.push(`UID:${ev.uid}`);
+      lines.push(`DTSTAMP:${dtstamp}`);
+      if (ev.allDay) {
+        lines.push(`DTSTART;VALUE=DATE:${ev.dtstart}`);
+        lines.push(`DTEND;VALUE=DATE:${ev.dtend}`);
+      } else {
+        lines.push(`DTSTART;TZID=Asia/Tokyo:${ev.dtstart}`);
+        lines.push(`DTEND;TZID=Asia/Tokyo:${ev.dtend}`);
+      }
+      lines.push(`SUMMARY:${ev.summary}`);
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+  }
+
+  function downloadICS(content, filename) {
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  openIcsBtn.addEventListener('click', () => {
+    const todayStr = dateKey(today);
+    if (!icsStartDate.value) icsStartDate.value = todayStr;
+    if (!icsEndDate.value) icsEndDate.value = todayStr;
+    openModal(icsModal);
+  });
+  closeIcsBtn.addEventListener('click', () => closeModal(icsModal));
+  icsModal.addEventListener('click', e => { if (e.target === icsModal) closeModal(icsModal); });
+
+  icsApplyShiftTime.addEventListener('change', () => {
+    icsCustomTimeRow.style.display = icsApplyShiftTime.checked ? 'none' : 'flex';
+  });
+  icsIncludeHoliday.addEventListener('change', () => {
+    icsHolidayTimeRow.style.display = icsIncludeHoliday.checked ? 'flex' : 'none';
+  });
+
+  generateIcsBtn.addEventListener('click', () => {
+    const startVal = icsStartDate.value;
+    const endVal = icsEndDate.value;
+    if (!startVal || !endVal) { alert('開始日と終了日を選択してください'); return; }
+    const start = new Date(startVal + 'T00:00');
+    const end = new Date(endVal + 'T00:00');
+    if (start > end) { alert('開始日は終了日より前の日付にしてください'); return; }
+
+    const team = teamSelect.value === 'ALL' ? 'A' : teamSelect.value;
+    const applyShiftTime = icsApplyShiftTime.checked;
+    const includeKyuuka = icsIncludeKyuuka.checked;
+    const includeHoliday = icsIncludeHoliday.checked;
+    const customTime = icsCustomTime.value || '07:00';
+    const [ch, cm] = customTime.split(':').map(Number);
+    const customDuration = parseFloat(icsCustomDuration.value) || 8;
+    const holidayTime = icsHolidayTime.value || '07:00';
+    const [hh, hm] = holidayTime.split(':').map(Number);
+    const holidayDuration = parseFloat(icsHolidayDuration.value) || 8;
+
+    function customTimedEvent(date, sH, sM, durationHours, summary, uid) {
+      const totalStart = sH * 60 + sM;
+      const totalEnd = totalStart + Math.round(durationHours * 60);
+      const overnight = totalEnd >= 24 * 60;
+      const eH = Math.floor((totalEnd % (24 * 60)) / 60);
+      const eM = (totalEnd % (24 * 60)) % 60;
+      return buildTimedEvent(date, sH, sM, eH, eM, overnight, summary, uid);
+    }
+
+    const events = [];
+    const cur = new Date(start);
+    while (cur <= end) {
+      const dk = dateKey(cur);
+      if (isKyuuka(cur)) {
+        if (includeKyuuka) events.push(buildAllDayEvent(cur, `有給（${team}班）`, `shift-${team}-${dk}-kyuuka@shiftcalendar`));
+      } else {
+        const shift = getShift(team, cur);
+        if (shift !== '休') {
+          if (applyShiftTime) {
+            const t = SHIFT_TIMES[shift];
+            events.push(buildTimedEvent(cur, t.startH, t.startM, t.endH, t.endM, t.overnight, `${SHIFT_LABELS[shift]}（${team}班）`, `shift-${team}-${dk}-${shift}@shiftcalendar`));
+          } else {
+            events.push(customTimedEvent(cur, ch, cm, customDuration, `${SHIFT_LABELS[shift]}（${team}班）`, `shift-${team}-${dk}-${shift}@shiftcalendar`));
+          }
+        } else if (includeHoliday) {
+          events.push(customTimedEvent(cur, hh, hm, holidayDuration, `休み（${team}班）`, `shift-${team}-${dk}-休@shiftcalendar`));
+        }
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+
+    if (events.length === 0) { alert('対象期間に予定がありません'); return; }
+
+    const filename = `${icsDate(start)}-${icsDate(end)}-${team}.ics`;
+    const icsContent = buildICS(events);
+    downloadICS(icsContent, filename);
+
+    closeModal(icsModal);
+  });
+
+  [openIcsBtn, closeIcsBtn, generateIcsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   const STORAGE_KEY_NEWS = KEYS.newsRead;
   function getReadDate() { return localStorage.getItem(STORAGE_KEY_NEWS) || null; }
@@ -955,9 +1316,20 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   nextBtn.onclick = () => { startMonth++; if (startMonth > 11) { startMonth = 0; startYear++; } render(); };
 
   container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  const JSON_FILES = {
+    'day.json': {
+      desc: '各班のシフト基準日を定義するファイルです。班名（A/B/C/D）をキーに、その班が8日周期（朝朝昼昼夜夜休休）の1日目となる日付を "YYYY-MM-DD" 形式で指定します。',
+      raw: null, loaded: false
+    },
+    'holiday.json': {
+      desc: '日本の祝日・休日を定義するファイルです。日付("YYYY-MM-DD")をキーに、祝日名を値として持つオブジェクトです。カレンダー上で該当日が赤色で表示されます。',
+      raw: null, loaded: false
+    }
+  };
+
   Promise.all([
-    fetch('day.json').then(r => r.json()).catch(() => ({})),
-    fetch('holiday.json').then(r => r.json()).catch(() => ({}))
+    fetch('day.json').then(r => r.text()).then(t => { JSON_FILES['day.json'].raw = t; JSON_FILES['day.json'].loaded = true; return JSON.parse(t); }).catch(() => ({})),
+    fetch('holiday.json').then(r => r.text()).then(t => { JSON_FILES['holiday.json'].raw = t; JSON_FILES['holiday.json'].loaded = true; return JSON.parse(t); }).catch(() => ({}))
   ]).then(([dayData, holidayData]) => {
     teamBaseDates = { ...teamBaseDates, ...dayData };
     HOLIDAYS = { ...HOLIDAYS, ...holidayData };
