@@ -17,12 +17,12 @@
   --today-border: #3b82f6;
   --休: #ff6b6b;
   --朝: #60a5fa;
-  --昼: #fbbf24;
+  --后: #fbbf24;
   --夜: #a78bfa;
   --有給: #34d399;
   --休-bg: rgba(255,107,107,0.12);
   --朝-bg: rgba(96,165,250,0.12);
-  --昼-bg: rgba(251,191,36,0.12);
+  --后-bg: rgba(251,191,36,0.12);
   --夜-bg: rgba(167,139,250,0.12);
   --有給-bg: rgba(52,211,153,0.12);
 }
@@ -37,12 +37,12 @@ html.light {
   --today-border: #3b82f6;
   --休: #e53e3e;
   --朝: #2563eb;
-  --昼: #d97706;
+  --后: #d97706;
   --夜: #7c3aed;
   --有給: #059669;
   --休-bg: rgba(229,62,62,0.1);
   --朝-bg: rgba(37,99,235,0.1);
-  --昼-bg: rgba(217,119,6,0.1);
+  --后-bg: rgba(217,119,6,0.1);
   --夜-bg: rgba(124,58,237,0.1);
   --有給-bg: rgba(5,150,105,0.1);
 }
@@ -239,7 +239,7 @@ html:not(.light) .json-file-status.ok { color: #86efac; }
   #printWrap .p-shift-row { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; }
   #printWrap .p-badge { font-size: 0.62rem; font-weight: 700; border-radius: 3px; padding: 1px 4px; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #printWrap .p-badge.b朝 { color: #1d4ed8; background: #dbeafe; }
-  #printWrap .p-badge.b昼 { color: #92400e; background: #fef3c7; }
+  #printWrap .p-badge.b后 { color: #92400e; background: #fef3c7; }
   #printWrap .p-badge.b夜 { color: #5b21b6; background: #ede9fe; }
   #printWrap .p-badge.b休 { color: #991b1b; background: #fee2e2; }
   #printWrap .p-holiday-name { font-size: 0.48rem; color: #c0392b; line-height: 1.2; text-align: center; max-width: 100%; overflow: hidden; }
@@ -270,11 +270,11 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .shift-row { width: 100%; min-height: 20px; display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; }
 .shift-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 1px 5px; font-size: 0.64rem; font-weight: 700; line-height: 1.4; white-space: nowrap; }
 .row-朝 .shift-badge { color: var(--朝); background: var(--朝-bg); }
-.row-昼 .shift-badge { color: var(--昼); background: var(--昼-bg); }
+.row-后 .shift-badge { color: var(--后); background: var(--后-bg); }
 .row-夜 .shift-badge { color: var(--夜); background: var(--夜-bg); }
 .s休 { color: var(--休); background: var(--休-bg); }
 .s朝 { color: var(--朝); background: var(--朝-bg); }
-.s昼 { color: var(--昼); background: var(--昼-bg); }
+.s后 { color: var(--后); background: var(--后-bg); }
 .s夜 { color: var(--夜); background: var(--夜-bg); }
 .s有給 { color: var(--有給); background: var(--有給-bg); }
 .today .cell-inner, .today .cell-all { background: var(--today-bg); box-shadow: 0 0 0 2px var(--today-border); }
@@ -337,7 +337,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--昼)"></div>午后勤 15:00 ～ 22:45</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--有給)"></div>有給</div>
 </div>
@@ -649,7 +649,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   ];
 
   const TYPE_LABEL = { update:"機能追加", fix:"修正", notice:"お知らせ", maint:"メンテナンス" };
-  const cycle = ['朝','朝','昼','昼','夜','夜','休','休'];
+  const cycle = ['朝','朝','后','后','夜','夜','休','休'];
   let teamBaseDates = { A:"2026-04-02", B:"2026-04-08", C:"2026-04-06", D:"2026-04-04" };
   const teams = ['A','B','C','D'];
 
@@ -1002,9 +1002,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   jsonViewModal.addEventListener('click', e => { if (e.target === jsonViewModal) closeModal(jsonViewModal); });
   closeJsonViewBtn.addEventListener('pointerup', () => setTimeout(() => closeJsonViewBtn.blur(), 100));
 
-  openKyuukaBtn.addEventListener('click', () => { renderKyuukaList(); openModal(kyuukaModal); });
+  openKyuukaBtn.addEventListener('click', () => { const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0');kyuukaDateInput.value = `${yyyy}-${mm}-${dd}`;renderKyuukaList();openModal(kyuukaModal);});
   closeKyuukaBtn.addEventListener('click', () => closeModal(kyuukaModal));
-  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal); });
+  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal);});
 
   openSettingsBtn.addEventListener('click', () => { updateThemeLabel(); openModal(settingsModal); });
   closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
@@ -1016,10 +1016,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 
   const SHIFT_TIMES = {
     '朝': { startH: 7,  startM: 0,  endH: 15, endM: 15, overnight: false },
-    '昼': { startH: 15, startM: 0,  endH: 22, endM: 45, overnight: false },
+    '后': { startH: 15, startM: 0,  endH: 22, endM: 45, overnight: false },
     '夜': { startH: 22, startM: 30, endH: 7,  endM: 15, overnight: true  }
   };
-  const SHIFT_LABELS = { '朝': '朝勤', '昼': '午後勤', '夜': '夜勤' };
+  const SHIFT_LABELS = { '朝': '朝勤', '后': '午后勤', '夜': '夜勤' };
 
   function pad2(n) { return String(n).padStart(2, '0'); }
   function icsDate(date) { return `${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}`; }
@@ -1262,10 +1262,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         if (dow === 0) td.classList.add('sun');
         if (dow === 6) td.classList.add('sat');
         if (holi) td.classList.add('holi');
-        const rows = { 朝:[], 昼:[], 夜:[] };
+        const rows = { 朝:[], 后:[], 夜:[] };
         for (const t of teams) { const s = getShift(t, cur); if (s !== '休') rows[s].push(t); }
         const makeRow = shift => `<div class="shift-row row-${shift}">${rows[shift].map(t=>`<span class="shift-badge">${t}</span>`).join('')}</div>`;
-        td.innerHTML = `<div class="cell-all"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('昼')}${makeRow('夜')}</div>`;
+        td.innerHTML = `<div class="cell-all"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('后')}${makeRow('夜')}</div>`;
         tr.appendChild(td);
       }
       while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
@@ -1292,10 +1292,10 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       const cur = new Date(year, month, d); const dow = cur.getDay(); const holi = holidayName(cur);
       const dayClass = (dow === 0 || holi) ? 'holiday' : dow === 6 ? 'sat' : '';
       const holiHTML = holi ? `<span class="p-holiday-name">${holi}</span>` : '';
-      const shiftsByType = { 朝:[], 昼:[], 夜:[], 休:[] };
+      const shiftsByType = { 朝:[], 后:[], 夜:[], 休:[] };
       for (const t of teams) shiftsByType[getShift(t, cur)].push(t);
       const badges = s => shiftsByType[s].map(t=>`<span class="p-badge b${s}">${t}</span>`).join('');
-      const shiftHTML = ['朝','昼','夜'].map(s => { const b=badges(s); return b?`<div class="p-shift-row">${b}</div>`:''; }).join('');
+      const shiftHTML = ['朝','后','夜'].map(s => { const b=badges(s); return b?`<div class="p-shift-row">${b}</div>`:''; }).join('');
       const restHTML = badges('休') ? `<div class="p-shift-row">${badges('休')}</div>` : '';
       tr += `<td><div class="p-cell"><span class="p-day ${dayClass}">${d}</span>${holiHTML}${shiftHTML}${restHTML}</div></td>`;
       colIdx++;
@@ -1306,7 +1306,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <div class="print-title">${year}年 ${month+1}月 全班シフト</div>
       <div class="print-legend">
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 7:00～15:15</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>午后勤 15:00～22:45</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>后勤 15:00～22:45</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#8b5cf6"></div>夜勤 22:30～7:15</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#ef4444"></div>休み</div>
       </div>
@@ -1342,7 +1342,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
   const JSON_FILES = {
     'day.json': {
-      desc: '各班のシフト基準日を定義するファイルです。班名（A/B/C/D）をキーに、その班が8日周期（朝朝昼昼夜夜休休）の1日目となる日付を "YYYY-MM-DD" 形式で指定します。',
+      desc: '各班のシフト基準日を定義するファイルです。班名（A/B/C/D）をキーに、その班が8日周期（朝朝后后夜夜休休）の1日目となる日付を "YYYY-MM-DD" 形式で指定します。',
       raw: null, loaded: false
     },
     'holiday.json': {
