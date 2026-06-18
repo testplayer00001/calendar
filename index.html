@@ -216,7 +216,17 @@ html:not(.light) .json-file-status.ok { color: #86efac; }
 .storage-bar { height: 100%; border-radius: 99px; background: #3b82f6; transition: width 0.4s ease, background 0.3s; }
 .storage-bar.warn { background: #f59e0b; }
 .storage-bar.danger { background: #ef4444; }
-.storage-stat-note { font-size: 0.72rem; color: var(--text-muted); } { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0; }
+.storage-stat-note { font-size: 0.72rem; color: var(--text-muted); }
+.loading-msg { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0; }
+.share-modal { width: min(420px, 94vw); }
+.share-qr-wrap { display: flex; justify-content: center; padding: 12px; background: #fff; border-radius: 12px; }
+.share-qr-wrap canvas { display: block; }
+.share-url-row { display: flex; gap: 8px; align-items: center; }
+.share-url-input { flex: 1; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; font-family: 'DM Mono', monospace; outline: none; white-space: nowrap; overflow-x: auto; }
+.share-copy-btn { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid #3b82f6; border-radius: 8px; padding: 8px 14px; font-size: 0.8rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; flex-shrink: 0; white-space: nowrap; }
+.share-copy-btn:hover { background: rgba(59,130,246,0.25); }
+.share-copy-btn:focus:not(:focus-visible) { outline: none; }
+.share-copy-btn.copied { background: rgba(34,197,94,0.2); color: #22c55e; border-color: #22c55e; }
 @media print {
   body > *:not(#printWrap) { display: none !important; }
   #printWrap { display: block !important; background: #fff; color: #111; font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 0; width: 100%; height: 100%; }
@@ -337,7 +347,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 15:00 ～ 22:45</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>午后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--有給)"></div>有給</div>
 </div>
@@ -442,15 +452,42 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <div class="settings-section-title">予定表 (ICS)</div>
       <div class="settings-row">
         <div>
-          <div class="settings-row-label">Outlookカレンダー設定</div>
-          <div class="settings-row-sub">Outlook等で読み込めるICSファイルを作成</div>
+          <div class="settings-row-label">カレンダーに取り込む</div>
+          <div class="settings-row-sub">Outlook等で開けるICSファイルを作成</div>
         </div>
         <button class="btn-cancel" id="openIcsModal" style="padding:6px 14px;font-size:0.8rem;">ICS作成</button>
       </div>
     </div>
 
+    <div class="settings-section">
+      <div class="settings-section-title">共有</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">このサイトを共有</div>
+          <div class="settings-row-sub">QRコード・URLで共有できます</div>
+        </div>
+        <button class="btn-cancel" id="openShareModal" style="padding:6px 14px;font-size:0.8rem;">共有</button>
+      </div>
+    </div>
+
     <div class="modal-btns">
       <button class="btn-cancel" id="closeSettingsModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shareModal">
+  <div class="modal share-modal">
+    <h2>共有</h2>
+    <div class="share-qr-wrap">
+      <canvas id="shareQrCanvas" width="200" height="200"></canvas>
+    </div>
+    <div class="share-url-row">
+      <input type="text" class="share-url-input" id="shareUrlInput" readonly />
+      <button class="share-copy-btn" id="shareCopyBtn">コピー</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeShareModal">閉じる</button>
     </div>
   </div>
 </div>
@@ -476,24 +513,12 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsCustomTimeRow" style="display:none;flex-direction:column;align-items:stretch;gap:8px;">
+    <div class="modal-row" id="icsCustomTimeRow" style="display:none">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" />
-
+      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" style="flex:1;" />
       <label>勤務時間</label>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <input
-          type="number"
-          class="kyuuka-input"
-          id="icsCustomDuration"
-          value="8"
-          min="0.25"
-          max="24"
-          step="0.25"
-          style="flex:1;"
-        />
-        <span style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">時間</span>
-      </div>
+      <input type="number" class="kyuuka-input" id="icsCustomDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
     </div>
     <div class="settings-row">
       <div>
@@ -508,31 +533,19 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="settings-row">
       <div>
         <div class="settings-row-label">休日を含める</div>
-        <div class="settings-row-sub">「休」の日も予定として追加</div>
+        <div class="settings-row-sub">「休」の日も時間を指定して追加（カスタム時間を使用）</div>
       </div>
       <label class="toggle">
         <input type="checkbox" id="icsIncludeHoliday" />
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsHolidayTimeRow" style="display:none;flex-direction:column;align-items:stretch;gap:8px;">
+    <div class="modal-row" id="icsHolidayTimeRow" style="display:none">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" />
-
+      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" style="flex:1;" />
       <label>勤務時間</label>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <input
-          type="number"
-          class="kyuuka-input"
-          id="icsHolidayDuration"
-          value="8"
-          min="0.25"
-          max="24"
-          step="0.25"
-          style="flex:1;"
-        />
-        <span style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">時間</span>
-      </div>
+      <input type="number" class="kyuuka-input" id="icsHolidayDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" id="closeIcsModal">キャンセル</button>
@@ -592,6 +605,12 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <script>
 (() => {
   const NEWS_DATA = [
+    {
+      date: "2026-06-12",
+      type: "update",
+      title: "共有機能（QRコード・URL）を追加",
+      body: "設定 → 「共有」から、このサイトのURLをQRコードと文字列の両方で表示できます。"
+    },
     {
       date: "2026-06-12",
       type: "update",
@@ -784,6 +803,12 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const icsHolidayTimeRow = document.getElementById('icsHolidayTimeRow');
   const icsHolidayTime    = document.getElementById('icsHolidayTime');
   const icsHolidayDuration= document.getElementById('icsHolidayDuration');
+  const shareModal       = document.getElementById('shareModal');
+  const openShareBtn     = document.getElementById('openShareModal');
+  const closeShareBtn    = document.getElementById('closeShareModal');
+  const shareUrlInput    = document.getElementById('shareUrlInput');
+  const shareCopyBtn     = document.getElementById('shareCopyBtn');
+  const shareQrCanvas    = document.getElementById('shareQrCanvas');
 
   for (let y = today.getFullYear() - 1; y <= today.getFullYear() + 1; y++) {
     const o = document.createElement('option');
@@ -1002,9 +1027,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   jsonViewModal.addEventListener('click', e => { if (e.target === jsonViewModal) closeModal(jsonViewModal); });
   closeJsonViewBtn.addEventListener('pointerup', () => setTimeout(() => closeJsonViewBtn.blur(), 100));
 
-  openKyuukaBtn.addEventListener('click', () => { const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0');kyuukaDateInput.value = `${yyyy}-${mm}-${dd}`;renderKyuukaList();openModal(kyuukaModal);});
+  openKyuukaBtn.addEventListener('click', () => {kyuukaDateInput.value = dateKey(new Date());openModal(kyuukaModal);renderKyuukaList();});
   closeKyuukaBtn.addEventListener('click', () => closeModal(kyuukaModal));
-  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal);});
+  kyuukaModal.addEventListener('click', e => { if (e.target === kyuukaModal) closeModal(kyuukaModal); });
 
   openSettingsBtn.addEventListener('click', () => { updateThemeLabel(); openModal(settingsModal); });
   closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
@@ -1014,12 +1039,285 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   closeDataBtn.addEventListener('click', () => closeModal(dataModal));
   dataModal.addEventListener('click', e => { if (e.target === dataModal) closeModal(dataModal); });
 
+  const QR = (() => {
+    const EC_LEVEL = 'M';
+    const G15 = (1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|(1<<0);
+    const G15_MASK = (1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
+
+    function getBCHDigit(data) { let digit = 0; while (data !== 0) { digit++; data >>>= 1; } return digit; }
+    function getBCHTypeInfo(data) {
+      let d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15)));
+      return ((data << 10) | d) ^ G15_MASK;
+    }
+
+    const EXP_TABLE = new Array(256), LOG_TABLE = new Array(256);
+    for (let i = 0; i < 8; i++) EXP_TABLE[i] = 1 << i;
+    for (let i = 8; i < 256; i++) EXP_TABLE[i] = EXP_TABLE[i-4] ^ EXP_TABLE[i-5] ^ EXP_TABLE[i-6] ^ EXP_TABLE[i-8];
+    for (let i = 0; i < 255; i++) LOG_TABLE[EXP_TABLE[i]] = i;
+    function glog(n){ if(n<1) throw new Error('glog'); return LOG_TABLE[n]; }
+    function gexp(n){ while(n<0)n+=255; while(n>=256)n-=255; return EXP_TABLE[n]; }
+
+    function makePoly(num, shift) {
+      let offset = 0;
+      while (offset < num.length && num[offset] === 0) offset++;
+      const arr = new Array(num.length - offset + shift).fill(0);
+      for (let i = 0; i < num.length - offset; i++) arr[i] = num[i + offset];
+      return {
+        num: arr,
+        get(i){ return this.num[i]; },
+        len(){ return this.num.length; },
+        mul(e){
+          const n = new Array(this.len() + e.len() - 1).fill(0);
+          for (let i=0;i<this.len();i++) for (let j=0;j<e.len();j++) n[i+j] ^= gexp(glog(this.get(i)) + glog(e.get(j)));
+          return makePoly(n,0);
+        },
+        mod(e){
+          if (this.len() - e.len() < 0) return this;
+          const ratio = glog(this.get(0)) - glog(e.get(0));
+          const n = this.num.slice();
+          for (let i=0;i<e.len();i++) n[i] ^= gexp(glog(e.get(i)) + ratio);
+          return makePoly(n,0).mod(e);
+        }
+      };
+    }
+    function errorCorrectPoly(ecLength) {
+      let a = makePoly([1],0);
+      for (let i=0;i<ecLength;i++) a = a.mul(makePoly([1, gexp(i)],0));
+      return a;
+    }
+
+    const RS_BLOCK_TABLE = {
+      1:{L:[1,26,19],M:[1,26,16],Q:[1,26,13],H:[1,26,9]},
+      2:{L:[1,44,34],M:[1,44,28],Q:[1,44,22],H:[1,44,16]},
+      3:{L:[1,70,55],M:[1,70,44],Q:[2,35,17],H:[2,35,13]},
+      4:{L:[1,100,80],M:[2,50,32],Q:[2,50,24],H:[4,25,9]},
+      5:{L:[1,134,108],M:[2,67,43],Q:[2,33,15,2,34,16],H:[2,33,11,2,34,12]},
+      6:{L:[2,86,68],M:[4,43,27],Q:[4,43,19],H:[4,43,15]},
+      7:{L:[2,98,78],M:[4,49,31],Q:[2,32,14,4,33,15],H:[4,39,13,1,40,14]},
+      8:{L:[2,121,97],M:[2,60,38,2,61,39],Q:[4,40,18,2,41,19],H:[4,40,14,2,41,15]},
+      9:{L:[2,146,116],M:[3,58,36,2,59,37],Q:[4,36,16,4,37,17],H:[4,36,12,4,37,13]},
+      10:{L:[2,86,68,2,87,69],M:[4,69,43,1,70,44],Q:[6,43,19,2,44,20],H:[6,43,15,2,44,16]}
+    };
+    function getRSBlocks(typeNumber, ecLevel) {
+      const rs = RS_BLOCK_TABLE[typeNumber][ecLevel];
+      const list = [];
+      for (let i=0;i<rs.length;i+=3) {
+        const count = rs[i], totalCount = rs[i+1], dataCount = rs[i+2];
+        for (let j=0;j<count;j++) list.push({ totalCount, dataCount });
+      }
+      return list;
+    }
+
+    function createData(typeNumber, ecLevel, dataStr) {
+      const utf8Str = unescape(encodeURIComponent(dataStr));
+      const bytes = [];
+      for (let i=0;i<utf8Str.length;i++) bytes.push(utf8Str.charCodeAt(i) & 0xff);
+
+      const bits = [];
+      function put(num,length){ for(let i=0;i<length;i++) bits.push(((num>>>(length-i-1))&1)===1); }
+      put(4,4);
+      put(bytes.length,8);
+      for (let i=0;i<bytes.length;i++) put(bytes[i],8);
+
+      const rsBlocks = getRSBlocks(typeNumber, ecLevel);
+      let totalDataCount = 0;
+      for (const b of rsBlocks) totalDataCount += b.dataCount;
+
+      if (bits.length + 4 <= totalDataCount * 8) put(0,4);
+      while (bits.length % 8 !== 0) bits.push(false);
+      while (bits.length < totalDataCount * 8) {
+        put(0xEC,8);
+        if (bits.length >= totalDataCount * 8) break;
+        put(0x11,8);
+      }
+
+      const dataBytes = [];
+      for (let i=0;i<bits.length;i+=8) {
+        let byte=0; for (let j=0;j<8;j++) byte = (byte<<1) | (bits[i+j]?1:0);
+        dataBytes.push(byte);
+      }
+
+      let offset = 0;
+      const maxDcCount = Math.max(...rsBlocks.map(b=>b.dataCount));
+      const maxEcCount = Math.max(...rsBlocks.map(b=>b.totalCount - b.dataCount));
+      const dcdata = new Array(rsBlocks.length);
+      const ecdata = new Array(rsBlocks.length);
+      for (let r=0;r<rsBlocks.length;r++) {
+        const dcCount = rsBlocks[r].dataCount;
+        const ecCount = rsBlocks[r].totalCount - dcCount;
+        dcdata[r] = dataBytes.slice(offset, offset+dcCount);
+        offset += dcCount;
+        const rsPoly = errorCorrectPoly(ecCount);
+        const rawPoly = makePoly(dcdata[r], ecCount);
+        const modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(ecCount).fill(0);
+        for (let i=0;i<ecdata[r].length;i++) {
+          const modIndex = i + modPoly.len() - ecdata[r].length;
+          ecdata[r][i] = modIndex>=0 ? modPoly.get(modIndex) : 0;
+        }
+      }
+      const out = [];
+      for (let i=0;i<maxDcCount;i++) for (let r=0;r<rsBlocks.length;r++) if (i<dcdata[r].length) out.push(dcdata[r][i]);
+      for (let i=0;i<maxEcCount;i++) for (let r=0;r<rsBlocks.length;r++) if (i<ecdata[r].length) out.push(ecdata[r][i]);
+      return out;
+    }
+
+    function moduleCountOf(typeNumber){ return typeNumber*4+17; }
+
+    function buildMatrix(typeNumber, ecLevel, dataBytes) {
+      const moduleCount = moduleCountOf(typeNumber);
+      const modules = [];
+      for (let i=0;i<moduleCount;i++) modules.push(new Array(moduleCount).fill(null));
+
+      function probe(row,col) {
+        for (let r=-1;r<=7;r++) for (let c=-1;c<=7;c++) {
+          if (row+r<=-1||moduleCount<=row+r||col+c<=-1||moduleCount<=col+c) continue;
+          let val = (0<=r&&r<=6&&(c===0||c===6)) || (0<=c&&c<=6&&(r===0||r===6)) || (2<=r&&r<=4&&2<=c&&c<=4);
+          modules[row+r][col+c] = val;
+        }
+      }
+      probe(0,0); probe(moduleCount-7,0); probe(0,moduleCount-7);
+
+      for (let r=8;r<moduleCount-8;r++) if (modules[r][6]===null) modules[r][6] = (r%2===0);
+      for (let c=8;c<moduleCount-8;c++) if (modules[6][c]===null) modules[6][c] = (c%2===0);
+
+      const alignTable = {1:[],2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34],7:[6,22,38],8:[6,24,42],9:[6,26,46],10:[6,28,50]};
+      const pos = alignTable[typeNumber] || [];
+      for (let i=0;i<pos.length;i++) for (let j=0;j<pos.length;j++) {
+        const row=pos[i], col=pos[j];
+        if (modules[row][col]!==null) continue;
+        for (let r=-2;r<=2;r++) for (let c=-2;c<=2;c++) modules[row+r][col+c] = (r===-2||r===2||c===-2||c===2||(r===0&&c===0));
+      }
+
+      for (let i=0;i<7;i++) {
+        if (modules[8][i]===null) modules[8][i]=false;
+        if (modules[moduleCount-1-i][8]===null) modules[moduleCount-1-i][8]=false;
+      }
+      for (let i=0;i<8;i++) {
+        if (modules[i][8]===null) modules[i][8]=false;
+        if (modules[8][moduleCount-1-i]===null) modules[8][moduleCount-1-i]=false;
+      }
+      modules[8][0]=false; modules[8][moduleCount-8]=false;
+
+      const ecMap = {L:1,M:0,Q:3,H:2};
+      const typeInfo = (ecMap[ecLevel] << 3) | 0;
+      const bchTypeInfo = getBCHTypeInfo(typeInfo);
+      for (let i=0;i<15;i++) {
+        const mod = ((bchTypeInfo>>i)&1)===1;
+        if (i<8) { if (modules[8][moduleCount-i-1]===null) modules[8][moduleCount-i-1]=mod; }
+        else { if (modules[moduleCount-15+i][8]===null) modules[moduleCount-15+i][8]=mod; }
+        if (i<6) { if (modules[i][8]===null) modules[i][8]=mod; }
+        else if (i<8) { if (modules[i+1][8]===null) modules[i+1][8]=mod; }
+        else { if (modules[8][15-i-1]===null) modules[8][15-i-1]=mod; }
+      }
+      modules[moduleCount-8][8]=false;
+
+      function mask(i,j){ return (i+j)%2===0; }
+
+      let byteIndex=0, bitIndex=7, row=moduleCount-1, dir=-1;
+      for (let colPair=moduleCount-1; colPair>0; colPair-=2) {
+        while (true) {
+          for (let c=0;c<2;c++) {
+            const col = colPair - c;
+            if (modules[row][col]===null) {
+              let dark=false;
+              if (byteIndex < dataBytes.length) dark = ((dataBytes[byteIndex] >>> bitIndex) & 1) === 1;
+              if (mask(row,col)) dark = !dark;
+              modules[row][col]=dark;
+              bitIndex--;
+              if (bitIndex===-1){ byteIndex++; bitIndex=7; }
+            }
+          }
+          row += dir;
+          if (row<0||moduleCount<=row){ row -= dir; dir=-dir; break; }
+        }
+      }
+      for (let r=0;r<moduleCount;r++) for (let c=0;c<moduleCount;c++) if (modules[r][c]===null) modules[r][c]=false;
+      return modules;
+    }
+
+    function pickType(dataStr) {
+      const len = unescape(encodeURIComponent(dataStr)).length;
+      for (let t=1;t<=10;t++) {
+        const rs = getRSBlocks(t, EC_LEVEL);
+        let total=0; for (const b of rs) total += b.dataCount;
+        if (len <= total - 3) return t;
+      }
+      return 10;
+    }
+
+    function generate(dataStr) {
+      const typeNumber = pickType(dataStr);
+      const dataBytes = createData(typeNumber, EC_LEVEL, dataStr);
+      return buildMatrix(typeNumber, EC_LEVEL, dataBytes);
+    }
+
+    function renderToCanvas(canvas, dataStr, size) {
+      let modules;
+      try { modules = generate(dataStr); } catch (e) { return false; }
+      const count = modules.length;
+      const margin = 4;
+      const cell = Math.max(1, Math.floor(size / (count + margin*2)));
+      const actualSize = cell * (count + margin*2);
+      canvas.width = actualSize; canvas.height = actualSize;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,actualSize,actualSize);
+      ctx.fillStyle = '#000';
+      for (let r=0;r<count;r++) for (let c=0;c<count;c++) if (modules[r][c]) ctx.fillRect((c+margin)*cell,(r+margin)*cell,cell,cell);
+      return true;
+    }
+
+    return { renderToCanvas };
+  })();
+
+  function refreshShareInfo() {
+    const url = window.location.href;
+    shareUrlInput.value = url;
+    shareCopyBtn.textContent = 'コピー';
+    shareCopyBtn.classList.remove('copied');
+    const ok = QR.renderToCanvas(shareQrCanvas, url, 200);
+    if (!ok) {
+      shareQrCanvas.width = 200; shareQrCanvas.height = 200;
+      const ctx = shareQrCanvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,200,200);
+      ctx.fillStyle = '#888'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('QRコードを生成できません', 100, 100);
+    }
+  }
+
+  openShareBtn.addEventListener('click', () => { refreshShareInfo(); openModal(shareModal); });
+  closeShareBtn.addEventListener('click', () => closeModal(shareModal));
+  shareModal.addEventListener('click', e => { if (e.target === shareModal) closeModal(shareModal); });
+
+  shareCopyBtn.addEventListener('click', () => {
+    const showCopied = () => {
+      shareCopyBtn.textContent = 'コピーしました';
+      shareCopyBtn.classList.add('copied');
+      setTimeout(() => { shareCopyBtn.textContent = 'コピー'; shareCopyBtn.classList.remove('copied'); }, 1800);
+    };
+    const fallback = () => {
+      shareUrlInput.removeAttribute('readonly');
+      shareUrlInput.select();
+      shareUrlInput.setSelectionRange(0, 99999);
+      try { document.execCommand('copy'); } catch {}
+      shareUrlInput.setAttribute('readonly', 'readonly');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrlInput.value).then(showCopied).catch(() => { fallback(); showCopied(); });
+    } else {
+      fallback(); showCopied();
+    }
+  });
+
+  [openShareBtn, closeShareBtn, shareCopyBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
+
   const SHIFT_TIMES = {
     '朝': { startH: 7,  startM: 0,  endH: 15, endM: 15, overnight: false },
     '后': { startH: 15, startM: 0,  endH: 22, endM: 45, overnight: false },
     '夜': { startH: 22, startM: 30, endH: 7,  endM: 15, overnight: true  }
   };
-  const SHIFT_LABELS = { '朝': '朝勤', '后': '午后勤', '夜': '夜勤' };
+  const SHIFT_LABELS = { '朝': '朝勤', '后': '后勤', '夜': '夜勤' };
 
   function pad2(n) { return String(n).padStart(2, '0'); }
   function icsDate(date) { return `${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}`; }
@@ -1306,7 +1604,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <div class="print-title">${year}年 ${month+1}月 全班シフト</div>
       <div class="print-legend">
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 7:00～15:15</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>后勤 15:00～22:45</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>午后勤 15:00～22:45</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#8b5cf6"></div>夜勤 22:30～7:15</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#ef4444"></div>休み</div>
       </div>
@@ -1342,11 +1640,11 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   container.innerHTML = '<div class="loading-msg">読み込み中...</div>';
   const JSON_FILES = {
     'day.json': {
-      desc: '各班のシフト基準日を定義するファイルです。班名（A/B/C/D）をキーに、その班が8日周期（朝朝后后夜夜休休）の1日目となる日付を "YYYY-MM-DD" 形式で指定します。',
+      desc: '各班のシフト基準日を定義するファイルです。(朝朝后后夜夜休休)の1日目となる日付を "YYYY-MM-DD" 形式で指定します。',
       raw: null, loaded: false
     },
     'holiday.json': {
-      desc: '日本の祝日・休日を定義するファイルです。日付("YYYY-MM-DD")をキーに、祝日名を値として持つオブジェクトです。カレンダー上で該当日が赤色で表示されます。',
+      desc: '日本の祝日・休日を定義するファイルです。',
       raw: null, loaded: false
     }
   };
