@@ -513,11 +513,15 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsCustomTimeRow" style="display:none">
+    <div class="modal-row" id="icsCustomTimeRow"
+        style="display:none; flex-direction:column; align-items:flex-start;">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" style="flex:1;" />
+      <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" />
+
       <label>勤務時間</label>
-      <input type="number" class="kyuuka-input" id="icsCustomDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <input type="number" class="kyuuka-input" id="icsCustomDuration"
+            value="1" min="0.25" max="24" step="0.25" />
+
       <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
     </div>
     <div class="settings-row">
@@ -533,18 +537,23 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <div class="settings-row">
       <div>
         <div class="settings-row-label">休日を含める</div>
-        <div class="settings-row-sub">「休」の日も時間を指定して追加（カスタム時間を使用）</div>
+        <div class="settings-row-sub">「休」の日を終日予定として追加</div>
       </div>
       <label class="toggle">
         <input type="checkbox" id="icsIncludeHoliday" />
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsHolidayTimeRow" style="display:none">
+    <div class="modal-row" id="icsHolidayTimeRow"
+        style="display:none; flex-direction:column; align-items:flex-start;">
       <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" style="flex:1;" />
+      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" />
+
       <label>勤務時間</label>
-      <input type="number" class="kyuuka-input" id="icsHolidayDuration" value="8" min="0.25" max="24" step="0.25" style="max-width:80px;" />
+      <input type="number" class="kyuuka-input"
+            id="icsHolidayDuration"
+            value="1" min="0.25" max="24" step="0.25" />
+
       <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
     </div>
     <div class="modal-btns">
@@ -609,7 +618,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       date: "2026-06-12",
       type: "update",
       title: "共有機能（QRコード・URL）を追加",
-      body: "設定 → 「共有」から、このサイトのQRコード、URLを表示できます。"
+      body: "設定 → 「共有」から、このサイトのURLをQRコードと文字列の両方で表示できます。"
     },
     {
       date: "2026-06-12",
@@ -800,9 +809,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const icsCustomDuration = document.getElementById('icsCustomDuration');
   const icsIncludeKyuuka  = document.getElementById('icsIncludeKyuuka');
   const icsIncludeHoliday = document.getElementById('icsIncludeHoliday');
-  const icsHolidayTimeRow = document.getElementById('icsHolidayTimeRow');
-  const icsHolidayTime    = document.getElementById('icsHolidayTime');
-  const icsHolidayDuration= document.getElementById('icsHolidayDuration');
   const shareModal       = document.getElementById('shareModal');
   const openShareBtn     = document.getElementById('openShareModal');
   const closeShareBtn    = document.getElementById('closeShareModal');
@@ -1398,9 +1404,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   icsApplyShiftTime.addEventListener('change', () => {
     icsCustomTimeRow.style.display = icsApplyShiftTime.checked ? 'none' : 'flex';
   });
-  icsIncludeHoliday.addEventListener('change', () => {
-    icsHolidayTimeRow.style.display = icsIncludeHoliday.checked ? 'flex' : 'none';
-  });
 
   generateIcsBtn.addEventListener('click', () => {
     const startVal = icsStartDate.value;
@@ -1429,7 +1432,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       const eM = (totalEnd % (24 * 60)) % 60;
       return buildTimedEvent(date, sH, sM, eH, eM, overnight, summary, uid);
     }
-
+ 
     const events = [];
     const cur = new Date(start);
     while (cur <= end) {
@@ -1446,21 +1449,20 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
             events.push(customTimedEvent(cur, ch, cm, customDuration, `${SHIFT_LABELS[shift]}（${team}班）`, `shift-${team}-${dk}-${shift}@shiftcalendar`));
           }
         } else if (includeHoliday) {
-          events.push(customTimedEvent(cur, hh, hm, holidayDuration, `休み（${team}班）`, `shift-${team}-${dk}-休@shiftcalendar`));
+          events.push(buildAllDayEvent(cur, `休み（${team}班）`, `shift-${team}-${dk}-休@shiftcalendar`));
         }
       }
       cur.setDate(cur.getDate() + 1);
     }
-
+ 
     if (events.length === 0) { alert('対象期間に予定がありません'); return; }
-
+ 
     const filename = `${icsDate(start)}-${icsDate(end)}-${team}.ics`;
     const icsContent = buildICS(events);
     downloadICS(icsContent, filename);
-
+ 
     closeModal(icsModal);
   });
-
   [openIcsBtn, closeIcsBtn, generateIcsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   const STORAGE_KEY_NEWS = KEYS.newsRead;
