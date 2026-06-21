@@ -84,6 +84,14 @@ html.light .news-btn:hover { background: #bbf7d0; }
 .news-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 99px; padding: 1px 5px; min-width: 16px; text-align: center; line-height: 1.4; pointer-events: none; }
 .news-badge.hidden { display: none; }
 .kyuuka-btn { display: flex; align-items: center; gap: 6px; background: var(--有給-bg); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
+.event-toggle-group { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px 6px 14px; }
+.event-toggle-label { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.05em; }
+.event-toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.event-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.event-toggle-slider { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; transition: background 0.25s, border-color 0.25s; }
+.event-toggle-slider::before { content: ''; position: absolute; left: 2px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--text-muted); transition: left 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.25s; }
+.event-toggle input:checked + .event-toggle-slider { background: rgba(236,72,153,0.2); border-color: #ec4899; }
+.event-toggle input:checked + .event-toggle-slider::before { left: calc(100% - 18px); background: #ec4899; }
 .kyuuka-btn:hover { background: rgba(52,211,153,0.2); }
 .kyuuka-btn:focus:not(:focus-visible) { outline: none; }
 .settings-btn { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: border-color 0.2s, color 0.2s; flex-shrink: 0; user-select: none; -webkit-user-select: none; }
@@ -227,6 +235,40 @@ html:not(.light) .json-file-status.ok { color: #86efac; }
 .share-copy-btn:hover { background: rgba(59,130,246,0.25); }
 .share-copy-btn:focus:not(:focus-visible) { outline: none; }
 .share-copy-btn.copied { background: rgba(34,197,94,0.2); color: #22c55e; border-color: #22c55e; }
+.event-modal { width: min(420px, 94vw); }
+.event-modal h2 { color: #ec4899; }
+.event-input { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.88rem; font-family: 'Noto Sans JP', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; }
+.event-input:focus { border-color: #ec4899; }
+.event-input[type="time"] { font-family: 'DM Mono', monospace; -webkit-appearance: none; cursor: pointer; }
+.event-textarea { resize: vertical; min-height: 60px; font-family: 'Noto Sans JP', sans-serif; }
+.event-field-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; display: block; }
+.event-field { display: flex; flex-direction: column; gap: 4px; }
+.event-time-row { display: flex; align-items: center; gap: 8px; }
+.event-time-row .event-field { flex: 1; }
+.event-time-sep { color: var(--text-muted); font-size: 0.8rem; padding-top: 16px; }
+.btn-event-add { background: rgba(236,72,153,0.15); color: #ec4899; border: 1px solid #ec4899; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
+.btn-event-add:hover { background: rgba(236,72,153,0.25); }
+.btn-event-add:focus:not(:focus-visible) { outline: none; }
+.event-list-modal { width: min(460px, 94vw); }
+.event-list-modal h2 { color: #ec4899; }
+.event-list-date { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; }
+.event-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+.event-list-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 24px 0; }
+.event-list-item { display: flex; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid #ec4899; border-radius: 8px; padding: 10px 14px; }
+.event-list-item-time { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #ec4899; white-space: nowrap; flex-shrink: 0; min-width: 84px; }
+.event-list-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.event-list-item-title { font-size: 0.85rem; font-weight: 600; color: var(--text); word-break: break-word; }
+.event-list-item-memo { font-size: 0.75rem; color: var(--text-muted); white-space: pre-wrap; word-break: break-word; }
+.event-list-item-del { background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; outline: none; transition: color 0.2s, background 0.2s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; line-height: 1; align-self: flex-start; }
+.event-list-item-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+.event-list-item-del:focus:not(:focus-visible) { outline: none; }
+.event-list-add-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(236,72,153,0.12); color: #ec4899; border: 1px dashed #ec4899; border-radius: 8px; padding: 10px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 600; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
+.event-list-add-btn:hover { background: rgba(236,72,153,0.2); }
+.event-list-add-btn:focus:not(:focus-visible) { outline: none; }
+.event-dot-row { display: flex; gap: 2px; justify-content: center; margin-top: 2px; }
+.event-dot { width: 4px; height: 4px; border-radius: 50%; background: #ec4899; }
+.cell-inner.has-event, .cell-all.has-event { cursor: pointer; }
+.event-add-mode .cell-inner, .event-add-mode .cell-all { cursor: copy; }
 @media print {
   body > *:not(#printWrap) { display: none !important; }
   #printWrap { display: block !important; background: #fff; color: #111; font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 0; width: 100%; height: 100%; }
@@ -329,6 +371,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <button class="kyuuka-btn" id="openKyuukaModal">有給</button>
   </div>
   <div class="ctrl-group">
+
+  </div>
+  <div class="ctrl-group">
     <button class="print-btn" id="openPrintModal">印刷</button>
   </div>
   <div class="ctrl-group">
@@ -347,7 +392,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>午后勤 15:00 ～ 22:45</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 15:00 ～ 22:45</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--有給)"></div>有給</div>
 </div>
@@ -396,6 +441,48 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   </div>
 </div>
 
+<div class="modal-overlay" id="eventAddModal">
+  <div class="modal event-modal">
+    <h2>予定を追加</h2>
+    <div class="event-list-date" id="eventAddDateLabel"></div>
+    <div class="event-field">
+      <label class="event-field-label">タイトル</label>
+      <input type="text" class="event-input" id="eventTitleInput" placeholder="例：遊びなど" />
+    </div>
+    <div class="event-time-row">
+      <div class="event-field">
+        <label class="event-field-label">開始時刻</label>
+        <input type="time" class="event-input" id="eventStartTimeInput" value="09:00" />
+      </div>
+      <span class="event-time-sep">〜</span>
+      <div class="event-field">
+        <label class="event-field-label">終了時刻</label>
+        <input type="time" class="event-input" id="eventEndTimeInput" value="10:00" />
+      </div>
+    </div>
+    <div class="event-field">
+      <label class="event-field-label">メモ</label>
+      <textarea class="event-input event-textarea" id="eventMemoInput" placeholder="メモ（任意）"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeEventAddModal">キャンセル</button>
+      <button class="btn-event-add" id="saveEventBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="eventListModal">
+  <div class="modal event-list-modal">
+    <h2>予定一覧</h2>
+    <div class="event-list-date" id="eventListDateLabel"></div>
+    <div class="event-list" id="eventListEl"></div>
+    <button class="event-list-add-btn" id="eventListAddBtn">＋ この日に予定を追加</button>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeEventListModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal">
   <div class="modal settings-modal">
     <h2>設定</h2>
@@ -435,7 +522,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <div class="settings-row-label">削除タイミング</div>
         <select class="settings-select" id="purgeTimingSelect">
           <option value="month">月が替わったら</option>
-          <option value="day">有給日が過ぎたら</option>
+          <option value="day">前日が終わったら</option>
         </select>
       </div>
     </div>
@@ -513,15 +600,11 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsCustomTimeRow"
-        style="display:none; flex-direction:column; align-items:flex-start;">
+    <div class="modal-row" id="icsCustomTimeRow"style="display:none; flex-direction:column; align-items:flex-start;">
       <label>開始時刻</label>
       <input type="time" class="kyuuka-input" id="icsCustomTime" value="07:00" />
-
       <label>勤務時間</label>
-      <input type="number" class="kyuuka-input" id="icsCustomDuration"
-            value="1" min="0.25" max="24" step="0.25" />
-
+      <input type="number" class="kyuuka-input" id="icsCustomDuration"value="1" min="0.25" max="24" step="0.25" />
       <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
     </div>
     <div class="settings-row">
@@ -544,18 +627,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="modal-row" id="icsHolidayTimeRow"
-        style="display:none; flex-direction:column; align-items:flex-start;">
-      <label>開始時刻</label>
-      <input type="time" class="kyuuka-input" id="icsHolidayTime" value="07:00" />
-
-      <label>勤務時間</label>
-      <input type="number" class="kyuuka-input"
-            id="icsHolidayDuration"
-            value="1" min="0.25" max="24" step="0.25" />
-
-      <span style="font-size:0.78rem;color:var(--text-muted);">時間</span>
-    </div>
     <div class="modal-btns">
       <button class="btn-cancel" id="closeIcsModal">キャンセル</button>
       <button class="btn-print" id="generateIcsBtn">作成</button>
@@ -568,7 +639,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     <h2>データ管理</h2>
     <div class="storage-stat" id="storageStat">
       <div class="storage-stat-row">
-        <span class="storage-stat-label">このサイトでの使用量</span>
+        <span class="storage-stat-label">このアプリの使用量</span>
         <span class="storage-stat-value" id="storageUsed">— KB</span>
       </div>
       <div class="storage-bar-wrap"><div class="storage-bar" id="storageBar" style="width:0%"></div></div>
@@ -615,16 +686,22 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 (() => {
   const NEWS_DATA = [
     {
+      date: "2026-06-21",
+      type: "update",
+      title: "予定追加機能を追加",
+      body: "日付をタップすると、タイトル・時刻・メモ付きの予定を登録できます。<br>予定がある日はカレンダー上にドットが表示されます。"
+    },
+    {
       date: "2026-06-12",
       type: "update",
       title: "共有機能（QRコード・URL）を追加",
-      body: "設定 → 「共有」から、このサイトのURLをQRコードと文字列の両方で表示できます。"
+      body: "設定 → 「共有」から、このサイトのURLをQRコードとURLの両方で表示されます。"
     },
     {
       date: "2026-06-12",
       type: "update",
       title: "ICS（予定表）作成機能を追加",
-      body: "設定 → 「ICS作成」から、期間を指定してOutlookなどに取り込めるICSファイルを作成ができます。<br><br>スマホ等で作成すると既存のカレンダーアプリに予定が追加されます。<br>※IOSのみ動作確認済み"
+      body: "設定 → 「ICS作成」から、期間を指定してOutlookなどに取り込めるICSファイルを作成ができます。<br><br>スマホ等で作成すると既存のカレンダーアプリに予定が追加されます。<br>※iOSのみ動作確認済み"
     },
     {
       date: "2026-06-12",
@@ -730,7 +807,8 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     kyuuka:      "shiftKyuuka",
     newsRead:    "shiftNewsRead",
     autoPurge:   "shiftAutoPurge",
-    purgeTiming: "shiftPurgeTiming"
+    purgeTiming: "shiftPurgeTiming",
+    events:      "shiftEvents"
   };
 
   const KEY_LABELS = {
@@ -740,7 +818,8 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     [KEYS.kyuuka]:      "有給データ",
     [KEYS.newsRead]:    "お知らせ既読",
     [KEYS.autoPurge]:   "有給自動削除",
-    [KEYS.purgeTiming]: "削除タイミング"
+    [KEYS.purgeTiming]: "削除タイミング",
+    [KEYS.events]:       "予定データ"
   };
 
   function dateKey(date) {
@@ -815,6 +894,19 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
   const shareUrlInput    = document.getElementById('shareUrlInput');
   const shareCopyBtn     = document.getElementById('shareCopyBtn');
   const shareQrCanvas    = document.getElementById('shareQrCanvas');
+  const eventAddModal    = document.getElementById('eventAddModal');
+  const closeEventAddBtn = document.getElementById('closeEventAddModal');
+  const saveEventBtn     = document.getElementById('saveEventBtn');
+  const eventAddDateLabel= document.getElementById('eventAddDateLabel');
+  const eventTitleInput  = document.getElementById('eventTitleInput');
+  const eventStartTimeInput = document.getElementById('eventStartTimeInput');
+  const eventEndTimeInput   = document.getElementById('eventEndTimeInput');
+  const eventMemoInput   = document.getElementById('eventMemoInput');
+  const eventListModal   = document.getElementById('eventListModal');
+  const closeEventListBtn= document.getElementById('closeEventListModal');
+  const eventListDateLabel = document.getElementById('eventListDateLabel');
+  const eventListEl      = document.getElementById('eventListEl');
+  const eventListAddBtn  = document.getElementById('eventListAddBtn');
 
   for (let y = today.getFullYear() - 1; y <= today.getFullYear() + 1; y++) {
     const o = document.createElement('option');
@@ -930,6 +1022,120 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     renderKyuukaList(); render();
   });
 
+
+
+  function loadEvents() { try { return JSON.parse(localStorage.getItem(KEYS.events) || "{}"); } catch { return {}; } }
+  function saveEvents(obj) { localStorage.setItem(KEYS.events, JSON.stringify(obj)); }
+  function getEventsForDate(dk) {
+    const all = loadEvents();
+    return (all[dk] || []).slice().sort((a,b) => (a.start || '').localeCompare(b.start || ''));
+  }
+  function hasEvents(dk) {
+    const all = loadEvents();
+    return Array.isArray(all[dk]) && all[dk].length > 0;
+  }
+
+  let currentEventDate = null;
+
+  function formatDateLabel(dk) {
+    const [y,m,d] = dk.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    const dow = ['日','月','火','水','木','金','土'][dt.getDay()];
+    return `${y}年${m}月${d}日（${dow}）`;
+  }
+
+  function openEventAddModal(dk) {
+    currentEventDate = dk;
+    eventAddDateLabel.textContent = formatDateLabel(dk);
+    eventTitleInput.value = '';
+    eventStartTimeInput.value = '09:00';
+    eventEndTimeInput.value = '10:00';
+    eventMemoInput.value = '';
+    openModal(eventAddModal);
+    setTimeout(() => eventTitleInput.focus(), 150);
+  }
+
+  saveEventBtn.addEventListener('click', () => {
+    const title = eventTitleInput.value.trim();
+    if (!title) { eventTitleInput.focus(); return; }
+    const all = loadEvents();
+    if (!all[currentEventDate]) all[currentEventDate] = [];
+    all[currentEventDate].push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      title,
+      start: eventStartTimeInput.value || '',
+      end: eventEndTimeInput.value || '',
+      memo: eventMemoInput.value.trim()
+    });
+    saveEvents(all);
+    closeModal(eventAddModal);
+    render();
+    if (eventListModal.classList.contains('open')) renderEventList(currentEventDate);
+  });
+
+  closeEventAddBtn.addEventListener('click', () => closeModal(eventAddModal));
+  eventAddModal.addEventListener('click', e => { if (e.target === eventAddModal) closeModal(eventAddModal); });
+
+  function renderEventList(dk) {
+    currentEventDate = dk;
+    eventListDateLabel.textContent = formatDateLabel(dk);
+    const events = getEventsForDate(dk);
+    eventListEl.innerHTML = '';
+    if (events.length === 0) {
+      eventListEl.innerHTML = '<div class="event-list-empty">この日の予定はありません</div>';
+      return;
+    }
+    events.forEach(ev => {
+      const row = document.createElement('div');
+      row.className = 'event-list-item';
+      const timeLabel = (ev.start || ev.end) ? `${ev.start || '--:--'} 〜 ${ev.end || '--:--'}` : '時刻未設定';
+      row.innerHTML = `
+        <div class="event-list-item-time">${timeLabel}</div>
+        <div class="event-list-item-body">
+          <div class="event-list-item-title">${ev.title}</div>
+          ${ev.memo ? `<div class="event-list-item-memo">${ev.memo}</div>` : ''}
+        </div>
+        <button class="event-list-item-del" aria-label="削除">✕</button>`;
+      row.querySelector('.event-list-item-del').addEventListener('click', () => {
+        const all = loadEvents();
+        all[dk] = (all[dk] || []).filter(x => x.id !== ev.id);
+        if (all[dk].length === 0) delete all[dk];
+        saveEvents(all);
+        renderEventList(dk);
+        render();
+      });
+      eventListEl.appendChild(row);
+    });
+  }
+
+  function openEventListModal(dk) {
+    renderEventList(dk);
+    openModal(eventListModal);
+  }
+
+  eventListAddBtn.addEventListener('click', () => {
+    closeModal(eventListModal);
+    openEventAddModal(currentEventDate);
+  });
+  closeEventListBtn.addEventListener('click', () => closeModal(eventListModal));
+  eventListModal.addEventListener('click', e => { if (e.target === eventListModal) closeModal(eventListModal); });
+
+  function handleDateClick(dk) {
+
+    const events = getEventsForDate(dk);
+
+    if (events.length > 0) {
+      openEventListModal(dk);
+      return;
+    }
+
+    openEventAddModal(dk);
+  }
+
+  [closeEventAddBtn, saveEventBtn, closeEventListBtn, eventListAddBtn].forEach(btn =>
+    btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100))
+  );
+  
   function calcStorageStats() {
     const MAX_BYTES = 5 * 1024 * 1024;
     let appBytes = 0;
@@ -1024,7 +1230,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         jsonViewContent.textContent = info.raw;
       }
     } else {
-      jsonViewContent.textContent = `${name} を読み込めませんでした。`;
+      jsonViewContent.textContent = `${name} を読み込めませんでした。\nHTMLファイルと同じフォルダに ${name} を置き、サーバー経由で開いているか確認してください。`;
     }
     openModal(jsonViewModal);
   }
@@ -1420,9 +1626,6 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
     const customTime = icsCustomTime.value || '07:00';
     const [ch, cm] = customTime.split(':').map(Number);
     const customDuration = parseFloat(icsCustomDuration.value) || 8;
-    const holidayTime = icsHolidayTime.value || '07:00';
-    const [hh, hm] = holidayTime.split(':').map(Number);
-    const holidayDuration = parseFloat(icsHolidayDuration.value) || 8;
 
     function customTimedEvent(date, sH, sM, durationHours, summary, uid) {
       const totalStart = sH * 60 + sM;
@@ -1432,7 +1635,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       const eM = (totalEnd % (24 * 60)) % 60;
       return buildTimedEvent(date, sH, sM, eH, eM, overnight, summary, uid);
     }
- 
+
     const events = [];
     const cur = new Date(start);
     while (cur <= end) {
@@ -1454,15 +1657,16 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       }
       cur.setDate(cur.getDate() + 1);
     }
- 
+
     if (events.length === 0) { alert('対象期間に予定がありません'); return; }
- 
+
     const filename = `${icsDate(start)}-${icsDate(end)}-${team}.ics`;
     const icsContent = buildICS(events);
     downloadICS(icsContent, filename);
- 
+
     closeModal(icsModal);
   });
+
   [openIcsBtn, closeIcsBtn, generateIcsBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   const STORAGE_KEY_NEWS = KEYS.newsRead;
@@ -1528,12 +1732,15 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         const cur = new Date(first.getFullYear(), first.getMonth(), d);
         const dow = cur.getDay(); const holi = holidayName(cur);
         const s = isKyuuka(cur) ? '有給' : getShift(team, cur);
+        const dk = dateKey(cur);
         const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
         if (dow === 6) td.classList.add('sat');
         if (holi) td.classList.add('holi');
-        td.innerHTML = `<div class="cell-inner"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span></div>`;
+        const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
+        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}</div>`;
+        td.querySelector('.cell-inner').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
       while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
@@ -1557,6 +1764,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         if (tr.children.length === 7) { tbody.appendChild(tr); tr = document.createElement('tr'); }
         const cur = new Date(first.getFullYear(), first.getMonth(), d);
         const dow = cur.getDay(); const holi = holidayName(cur);
+        const dk = dateKey(cur);
         const td = document.createElement('td');
         if (cur.toDateString() === today.toDateString()) td.classList.add('today');
         if (dow === 0) td.classList.add('sun');
@@ -1565,7 +1773,9 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
         const rows = { 朝:[], 后:[], 夜:[] };
         for (const t of teams) { const s = getShift(t, cur); if (s !== '休') rows[s].push(t); }
         const makeRow = shift => `<div class="shift-row row-${shift}">${rows[shift].map(t=>`<span class="shift-badge">${t}</span>`).join('')}</div>`;
-        td.innerHTML = `<div class="cell-all"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('后')}${makeRow('夜')}</div>`;
+        const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
+        td.innerHTML = `<div class="cell-all${hasEvents(dk)?' has-event':''}"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('后')}${makeRow('夜')}${dotHTML}</div>`;
+        td.querySelector('.cell-all').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
       while (tr.children.length < 7) tr.appendChild(document.createElement('td'));
@@ -1606,7 +1816,7 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
       <div class="print-title">${year}年 ${month+1}月 全班シフト</div>
       <div class="print-legend">
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 7:00～15:15</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>午后勤 15:00～22:45</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>后勤 15:00～22:45</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#8b5cf6"></div>夜勤 22:30～7:15</div>
         <div class="print-legend-item"><div class="print-legend-dot" style="background:#ef4444"></div>休み</div>
       </div>
