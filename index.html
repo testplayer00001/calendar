@@ -348,6 +348,8 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .s后 { color: var(--后); background: var(--后-bg); }
 .s夜 { color: var(--夜); background: var(--夜-bg); }
 .s有給 { color: var(--有給); background: var(--有給-bg); }
+.cell-all.kyuuka-day { background: var(--有給-bg); box-shadow: inset 0 0 0 1px var(--有給); border-radius: 8px; }
+.kyuuka-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; color: var(--有給); background: rgba(52,211,153,0.18); border-radius: 4px; padding: 0 4px; line-height: 1.5; margin: 1px 0 2px; }
 .today .cell-inner, .today .cell-all { background: var(--today-bg); box-shadow: 0 0 0 2px var(--today-border); }
 .today .day-num, .today .all-day-num { color: #3b82f6; font-weight: 700; }
 .sun .day-num, .sun .all-day-num { color: var(--休); opacity: 0.7; }
@@ -744,6 +746,12 @@ input,select,textarea {font-size: 16px !important;}
 (() => {
   const NEWS_DATA = [
     {
+      date: "2026-08-08",
+      type: "fix",
+      title: "有給機能の修正",
+      body: "有給日の指定しても色が変わらないバグを修正"
+    },    
+    {
       date: "2026-06-21",
       type: "update",
       title: "予定追加機能を追加",
@@ -1049,7 +1057,6 @@ input,select,textarea {font-size: 16px !important;}
   purgePastKyuuka();
 
   function isKyuuka(date) {
-    if (teamSelect.value === 'ALL') return false;
     return loadKyuuka().includes(dateKey(date));
   }
 
@@ -1898,7 +1905,9 @@ input,select,textarea {font-size: 16px !important;}
         for (const t of teams) { const s = getShift(t, cur); if (s !== '休') rows[s].push(t); }
         const makeRow = shift => `<div class="shift-row row-${shift}">${rows[shift].map(t=>`<span class="shift-badge">${t}</span>`).join('')}</div>`;
         const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
-        td.innerHTML = `<div class="cell-all${hasEvents(dk)?' has-event':''}"><span class="all-day-num">${d}</span>${makeRow('朝')}${makeRow('后')}${makeRow('夜')}${dotHTML}</div>`;
+        const kyuuka = isKyuuka(cur);
+        const kyuukaTagHTML = kyuuka ? '<span class="kyuuka-tag">有給</span>' : '';
+        td.innerHTML = `<div class="cell-all${hasEvents(dk)?' has-event':''}${kyuuka?' kyuuka-day':''}"><span class="all-day-num">${d}</span>${kyuukaTagHTML}${makeRow('朝')}${makeRow('后')}${makeRow('夜')}${dotHTML}</div>`;
         td.querySelector('.cell-all').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
