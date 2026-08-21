@@ -81,6 +81,22 @@ html.light .print-btn:hover { background: #bfdbfe; }
 .news-btn:focus:not(:focus-visible) { outline: none; }
 html.light .news-btn { background: #dcfce7; color: #15803d; border-color: #22c55e; }
 html.light .news-btn:hover { background: #bbf7d0; }
+.spec-btn { display: flex; align-items: center; gap: 6px; background: #241a3a; color: #c4b5fd; border: 1px solid #a78bfa; border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
+.spec-btn:hover { background: #2f2350; }
+.spec-btn:focus:not(:focus-visible) { outline: none; }
+html.light .spec-btn { background: #ede9fe; color: #6d28d9; border-color: #a78bfa; }
+html.light .spec-btn:hover { background: #ddd6fe; }
+.spec-modal { width: min(900px, 96vw); height: min(92vh, 1200px); padding: 20px 20px 16px; }
+.spec-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.spec-modal-header h2 { color: #a78bfa; text-align: left; }
+.spec-modal-actions { display: flex; align-items: center; gap: 8px; }
+.spec-link-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid #a78bfa; border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 600; text-decoration: none; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
+.spec-link-btn:hover { background: rgba(167,139,250,0.28); }
+.spec-frame-wrap { flex: 1; min-height: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+.spec-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; background: #525659; }
+.spec-fallback { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px; height: 100%; padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.82rem; line-height: 1.7; }
+.spec-fallback.show { display: flex; }
+.spec-fallback.show + iframe { display: none; }
 .news-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 700; font-family: 'DM Mono', monospace; border-radius: 99px; padding: 1px 5px; min-width: 16px; text-align: center; line-height: 1.4; pointer-events: none; }
 .news-badge.hidden { display: none; }
 .kyuuka-btn { display: flex; align-items: center; gap: 6px; background: var(--有給-bg); color: var(--有給); border: 1px solid var(--有給); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; white-space: nowrap; }
@@ -403,6 +419,9 @@ input,select,textarea {font-size: 16px !important;}
     <button class="news-btn" id="openNewsModal">
       お知らせ<span class="news-badge" id="newsBadge"></span>
     </button>
+  </div>
+  <div class="ctrl-group">
+    <button class="spec-btn" id="openSpecModal">仕様書</button>
   </div>
   <div class="ctrl-group">
     <button class="settings-btn" id="openSettingsModal" title="設定" aria-label="設定">
@@ -741,10 +760,36 @@ input,select,textarea {font-size: 16px !important;}
   </div>
 </div>
 
+<div class="modal-overlay" id="specModal">
+  <div class="modal spec-modal">
+    <div class="spec-modal-header">
+      <h2>仕様書</h2>
+      <div class="spec-modal-actions">
+        <a class="spec-link-btn" id="specOpenTabLink" href="spec.pdf" target="_blank" rel="noopener">新しいタブで開く</a>
+        <button class="news-close-btn" id="closeSpecModal">✕</button>
+      </div>
+    </div>
+    <div class="spec-frame-wrap">
+      <div class="spec-fallback" id="specFallback">
+        spec.pdf を読み込めませんでした。<br>
+        index.html と同じフォルダに spec.pdf を置き、サーバー経由で開いているかご確認ください。<br>
+        （ローカルでHTMLファイルを直接開いた場合はPDFを取得できません）
+      </div>
+      <iframe id="specFrame" src="spec.pdf" title="仕様書PDF"></iframe>
+    </div>
+  </div>
+</div>
+
 <div id="printWrap" style="display:none"></div>
 <script>
 (() => {
   const NEWS_DATA = [
+    {
+      date: "2026-08-22",
+      type: "update",
+      title: "仕様書ページを追加",
+      body: "コントロールバーの「仕様書」から、このサイトの機能仕様書を確認できるようになりました。"
+    },
     {
       date: "2026-08-08",
       type: "fix",
@@ -917,6 +962,11 @@ input,select,textarea {font-size: 16px !important;}
   const closeNewsBtn    = document.getElementById('closeNewsModal');
   const newsBadge       = document.getElementById('newsBadge');
   const newsList        = document.getElementById('newsList');
+  const specModal       = document.getElementById('specModal');
+  const openSpecBtn     = document.getElementById('openSpecModal');
+  const closeSpecBtn    = document.getElementById('closeSpecModal');
+  const specFrame       = document.getElementById('specFrame');
+  const specFallback    = document.getElementById('specFallback');
   const kyuukaModal     = document.getElementById('kyuukaModal');
   const openKyuukaBtn   = document.getElementById('openKyuukaModal');
   const closeKyuukaBtn  = document.getElementById('closeKyuukaModal');
@@ -1831,6 +1881,18 @@ input,select,textarea {font-size: 16px !important;}
   openNewsBtn.addEventListener('click', () => { buildNewsList(); openModal(newsModal); markAllRead(); updateBadge(); });
   closeNewsBtn.addEventListener('click', () => closeModal(newsModal));
   newsModal.addEventListener('click', e => { if (e.target === newsModal) closeModal(newsModal); });
+
+  let specChecked = false;
+  function checkSpecAvailable() {
+    if (specChecked) return;
+    specChecked = true;
+    fetch('spec.pdf', { method: 'HEAD' })
+      .then(res => { if (!res.ok) throw new Error('not ok'); })
+      .catch(() => { specFallback.classList.add('show'); });
+  }
+  openSpecBtn.addEventListener('click', () => { checkSpecAvailable(); openModal(specModal); });
+  closeSpecBtn.addEventListener('click', () => closeModal(specModal));
+  specModal.addEventListener('click', e => { if (e.target === specModal) closeModal(specModal); });
 
   [openKyuukaBtn, closeKyuukaBtn, openSettingsBtn, closeSettingsBtn,
    openNewsBtn, closeNewsBtn, openDataBtn, closeDataBtn, deleteAllBtn, themeToggleBtn
