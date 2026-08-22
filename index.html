@@ -936,9 +936,30 @@ input,select,textarea {font-size: 16px !important;}
   function dateKey(date) {
     return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
   }
-  function holidayName(date) { return HOLIDAYS[dateKey(date)] || null; }
 
-  const today = new Date();
+  function checkDateChange() {
+    const now = new Date();
+
+    if (dateKey(now) === dateKey(today)) return;
+
+    today = now;
+    startYear = today.getFullYear();
+    startMonth = today.getMonth();
+    render();
+  }
+
+  setInterval(checkDateChange, 30000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      checkDateChange();
+    }
+  });
+
+  function holidayName(date) {
+    return HOLIDAYS[dateKey(date)] || null;
+  }
+  let today = new Date();
   let startYear  = today.getFullYear();
   let startMonth = today.getMonth();
 
