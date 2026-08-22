@@ -421,7 +421,7 @@ input,select,textarea {font-size: 16px !important;}
     </button>
   </div>
   <div class="ctrl-group">
-    <button class="spec-btn" id="openSpecModal">仕様書</button>
+    <a class="spec-btn" href="spec.pdf" target="_blank" rel="noopener">仕様書</a>
   </div>
   <div class="ctrl-group">
     <button class="settings-btn" id="openSettingsModal" title="設定" aria-label="設定">
@@ -1890,9 +1890,7 @@ input,select,textarea {font-size: 16px !important;}
       .then(res => { if (!res.ok) throw new Error('not ok'); })
       .catch(() => { specFallback.classList.add('show'); });
   }
-  openSpecBtn.addEventListener('click', () => { checkSpecAvailable(); openModal(specModal); });
-  closeSpecBtn.addEventListener('click', () => closeModal(specModal));
-  specModal.addEventListener('click', e => { if (e.target === specModal) closeModal(specModal); });
+
 
   [openKyuukaBtn, closeKyuukaBtn, openSettingsBtn, closeSettingsBtn,
    openNewsBtn, closeNewsBtn, openDataBtn, closeDataBtn, deleteAllBtn, themeToggleBtn
