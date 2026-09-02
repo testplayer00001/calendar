@@ -232,6 +232,11 @@ html:not(.light) .json-file-status.ok { color: #86efac; }
 .json-view-modal { width: min(560px, 94vw); }
 .json-view-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
 .json-view-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text); line-height: 1.6; max-height: 320px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+.logic-modal { width: min(560px, 94vw); }
+.logic-section { display: flex; flex-direction: column; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+.logic-section-title { font-size: 1.02rem; font-weight: 700; color: var(--text); }
+.logic-section-body { font-size: 0.92rem; color: var(--text); line-height: 1.9; }
+.logic-section-body ul { margin: 6px 0 0 1.2em; display: flex; flex-direction: column; gap: 8px; }
 .storage-stat { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
 .storage-stat-row { display: flex; justify-content: space-between; align-items: baseline; }
 .storage-stat-label { font-size: 0.78rem; color: var(--text-muted); }
@@ -1192,6 +1197,13 @@ input,select,textarea {font-size: 16px !important;}
     setTimeout(() => eventTitleInput.focus(), 150);
   }
 
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+
   saveEventBtn.addEventListener('click', () => {
     const title = eventTitleInput.value.trim();
     if (!title) { eventTitleInput.focus(); return; }
@@ -1229,8 +1241,8 @@ input,select,textarea {font-size: 16px !important;}
       row.innerHTML = `
         <div class="event-list-item-time">${timeLabel}</div>
         <div class="event-list-item-body">
-          <div class="event-list-item-title">${ev.title}</div>
-          ${ev.memo ? `<div class="event-list-item-memo">${ev.memo}</div>` : ''}
+          <div class="event-list-item-title">${escapeHtml(ev.title)}</div>
+          ${ev.memo ? `<div class="event-list-item-memo">${escapeHtml(ev.memo)}</div>` : ''}
         </div>
         <button class="event-list-item-del" aria-label="削除">✕</button>`;
       row.querySelector('.event-list-item-del').addEventListener('click', () => {
@@ -1357,8 +1369,8 @@ input,select,textarea {font-size: 16px !important;}
         item.innerHTML = `
           <div class="data-item-info" style="gap:5px;">
             <span class="data-item-key">${dateLabel}${timeLabel ? '　' + timeLabel : ''}</span>
-            <span class="data-item-val" style="font-weight:600;">${ev.title}</span>
-            ${ev.memo ? `<span class="data-item-val" style="font-size:0.75rem;color:var(--text-muted);">${ev.memo}</span>` : ''}
+            <span class="data-item-val" style="font-weight:600;">${escapeHtml(ev.title)}</span>
+            ${ev.memo ? `<span class="data-item-val" style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(ev.memo)}</span>` : ''}
           </div>
           <button class="data-item-del" aria-label="削除">✕</button>`;
         item.querySelector('.data-item-del').addEventListener('click', () => {
@@ -1452,6 +1464,7 @@ input,select,textarea {font-size: 16px !important;}
   openDataBtn.addEventListener('click', () => { renderDataList(); renderJsonFileList(); openModal(dataModal); });
   closeDataBtn.addEventListener('click', () => closeModal(dataModal));
   dataModal.addEventListener('click', e => { if (e.target === dataModal) closeModal(dataModal); });
+
 
   const QR = (() => {
     const EC_LEVEL = 'M';
