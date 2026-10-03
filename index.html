@@ -399,6 +399,12 @@ input,select,textarea {font-size: 16px !important;}
 .import-item .dup { color: var(--text-muted); font-size: 0.7rem; margin-left: 6px; }
 .btn-accept { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
 .btn-accept:hover { background: rgba(59,130,246,0.28); }
+.sd-pw-wrap { display: flex; flex-direction: column; gap: 6px; }
+.sd-pw-label { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+.sd-pw-input { width: 100%; box-sizing: border-box; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; outline: none; }
+.sd-pw-input:focus { border-color: #3b82f6; }
+.sd-pw-input:disabled { opacity: 0.45; }
+.pw-error { font-size: 0.78rem; color: #ef4444; text-align: center; min-height: 1.1em; }
 </style>
 </head>
 <body>
@@ -843,6 +849,11 @@ input,select,textarea {font-size: 16px !important;}
       <div class="sd-opt-body"><div class="sd-opt-title">予定</div><div class="sd-opt-sub" id="sdEventsSub"></div></div>
       <span class="toggle"><input type="checkbox" id="sdEvents" /><span class="toggle-slider"></span></span>
     </label>
+    <div class="sd-pw-wrap">
+      <label class="sd-pw-label" for="sdPassword">パスワード（任意）</label>
+      <input type="text" class="sd-pw-input" id="sdPassword" placeholder="設定すると、知っている人だけが開けます" autocomplete="off" maxlength="64" />
+      <div class="sd-note" id="sdPwNote">パスワードは相手に伝えてください</div>
+    </div>
     <div class="share-url-row">
       <input type="text" class="share-url-input" id="sdUrlInput" readonly />
       <button class="share-copy-btn" id="sdCopyBtn">コピー</button>
@@ -850,6 +861,19 @@ input,select,textarea {font-size: 16px !important;}
     <div class="sd-note" id="sdNote"></div>
     <div class="modal-btns">
       <button class="btn-cancel" id="closeShareDataModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pwModal">
+  <div class="modal import-modal">
+    <h2>パスワードが必要です</h2>
+    <div class="import-desc">この共有はパスワードで保護されています。<br>送り主から聞いたパスワードを入力してください。</div>
+    <input type="password" class="sd-pw-input" id="pwInput" placeholder="パスワード" autocomplete="off" maxlength="64" />
+    <div class="pw-error" id="pwError"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="pwCancelBtn">キャンセル</button>
+      <button class="btn-accept" id="pwOkBtn">開く</button>
     </div>
   </div>
 </div>
@@ -886,8 +910,8 @@ input,select,textarea {font-size: 16px !important;}
     {
       date: "2026-10-03",
       type: "update",
-      title: "予定の共有を追加",
-      body: "設定 → 「予定の共有」から、班・有給・予定を含んだURLを作成して共有できます。<br>URLを開くと確認画面が表示され、「追加する」を押すと予定が追加されます。"
+      title: "予定の共有・予定の自動削除を追加",
+      body: "設定 → 「予定の共有」から、班・有給・予定を含んだURLを作成して共有できます。<br>URLを開くと確認画面が表示され、「追加する」を押すと予定が追加されます。<br><br>また、自動削除に「予定」も追加されました。設定から ON/OFF を切り替えられます。"
     },
     {
       date: "2026-08-22",
@@ -1446,19 +1470,50 @@ input,select,textarea {font-size: 16px !important;}
     chunks.forEach(c => { out.set(c, off); off += c.length; });
     return out;
   }
-  async function encodeSharePayload(obj) {
-    const raw = new TextEncoder().encode(JSON.stringify(obj));
-    if (typeof CompressionStream !== 'undefined') {
-      try { return 'z' + bytesToB64url(await streamBytes(raw, new CompressionStream('deflate-raw'))); } catch {}
-    }
-    return 'j' + bytesToB64url(raw);
+  const PBKDF2_ITER = 200000;
+  const cryptoAvailable = !!(window.crypto && window.crypto.subtle);
+  const normPw = pw => String(pw).normalize('NFKC').trim();
+  const isEncryptedPayload = str => typeof str === 'string' && (str[0] === 'e' || str[0] === 'f');
+  async function deriveAesKey(password, salt) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(normPw(password)), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: PBKDF2_ITER, hash: 'SHA-256' },
+      base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   }
-  async function decodeSharePayload(str) {
+  async function encodeSharePayload(obj, password) {
+    const raw = new TextEncoder().encode(JSON.stringify(obj));
+    let body = raw, compressed = false;
+    if (typeof CompressionStream !== 'undefined') {
+      try { body = await streamBytes(raw, new CompressionStream('deflate-raw')); compressed = true; } catch { body = raw; }
+    }
+    if (password && normPw(password)) {
+      if (!cryptoAvailable) throw new Error('crypto unavailable');
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveAesKey(password, salt);
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, body));
+      const out = new Uint8Array(28 + ct.length);
+      out.set(salt, 0); out.set(iv, 16); out.set(ct, 28);
+      return (compressed ? 'e' : 'f') + bytesToB64url(out);
+    }
+    return (compressed ? 'z' : 'j') + bytesToB64url(body);
+  }
+  async function decodeSharePayload(str, password) {
     if (typeof str !== 'string' || str.length < 2 || str.length > MAX_PARAM_LEN) throw new Error('bad length');
     const kind = str[0];
     let bytes = b64urlToBytes(str.slice(1));
-    if (kind === 'z') bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'), MAX_DECODED_BYTES);
-    else if (kind !== 'j') throw new Error('unknown format');
+    let compressed = (kind === 'z' || kind === 'e');
+    if (kind === 'e' || kind === 'f') {
+      if (!cryptoAvailable) throw new Error('crypto unavailable');
+      if (bytes.length < 28 + 16) throw new Error('bad data');
+      try {
+        const key = await deriveAesKey(password || '', bytes.slice(0, 16));
+        bytes = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes.slice(16, 28) }, key, bytes.slice(28)));
+      } catch {
+        const err = new Error('bad password'); err.code = 'BAD_PASSWORD'; throw err;
+      }
+    } else if (kind !== 'z' && kind !== 'j') throw new Error('unknown format');
+    if (compressed) bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'), MAX_DECODED_BYTES);
     if (bytes.length > MAX_DECODED_BYTES) throw new Error('too large');
     return JSON.parse(new TextDecoder().decode(bytes));
   }
@@ -1479,6 +1534,13 @@ input,select,textarea {font-size: 16px !important;}
   const sdUrlInput = document.getElementById('sdUrlInput');
   const sdCopyBtn = document.getElementById('sdCopyBtn');
   const sdNote = document.getElementById('sdNote');
+  const sdPassword = document.getElementById('sdPassword');
+  const sdPwNote = document.getElementById('sdPwNote');
+  if (!cryptoAvailable) {
+    sdPassword.disabled = true;
+    sdPassword.placeholder = 'この環境では使えません';
+    sdPwNote.textContent = 'パスワード機能はHTTPSのページでのみ使えます';
+  }
 
   function buildSharePayload() {
     const p = { v: 1 };
@@ -1502,7 +1564,9 @@ input,select,textarea {font-size: 16px !important;}
       sdNote.textContent = '共有する内容を選んでください';
       return;
     }
-    const encoded = await encodeSharePayload(buildSharePayload());
+    let encoded;
+    try { encoded = await encodeSharePayload(buildSharePayload(), sdPassword.value); }
+    catch { if (seq === sdSeq) { sdUrlInput.value = ''; sdNote.className = 'sd-note warn'; sdNote.textContent = 'URLを作成できませんでした'; } return; }
     if (seq !== sdSeq) return;
     const url = `${location.origin}${location.pathname}#${SHARE_PARAM}=${encoded}`;
     sdUrlInput.value = url;
@@ -1517,7 +1581,8 @@ input,select,textarea {font-size: 16px !important;}
 
   function openShareDataModal() {
     const k = loadKyuuka(), ec = countEvents();
-    sdTeam.checked = true;
+    sdTeam.checked = false;
+    sdPassword.value = '';
     sdKyuuka.checked = k.length > 0;
     sdEvents.checked = ec > 0;
     sdKyuuka.disabled = k.length === 0;
@@ -1529,6 +1594,13 @@ input,select,textarea {font-size: 16px !important;}
     openModal(shareDataModal);
   }
   [sdTeam, sdKyuuka, sdEvents].forEach(c => c.addEventListener('change', refreshShareData));
+  let sdPwTimer = null;
+  sdPassword.addEventListener('input', () => {
+    sdSeq++;
+    sdUrlInput.value = '';
+    clearTimeout(sdPwTimer);
+    sdPwTimer = setTimeout(refreshShareData, 400);
+  });
   document.getElementById('openShareDataModal').addEventListener('click', openShareDataModal);
   document.getElementById('closeShareDataModal').addEventListener('click', () => closeModal(shareDataModal));
   shareDataModal.addEventListener('click', e => { if (e.target === shareDataModal) closeModal(shareDataModal); });
@@ -1554,6 +1626,11 @@ input,select,textarea {font-size: 16px !important;}
 
   const importModal = document.getElementById('importModal');
   let pendingImport = null;
+  let pendingRaw = null;
+  const pwModal = document.getElementById('pwModal');
+  const pwInput = document.getElementById('pwInput');
+  const pwError = document.getElementById('pwError');
+  const pwOkBtn = document.getElementById('pwOkBtn');
 
   function getShareParam() {
     try {
@@ -1672,11 +1749,51 @@ input,select,textarea {font-size: 16px !important;}
   document.getElementById('impRejectBtn').addEventListener('click', rejectImport);
   importModal.addEventListener('click', e => { if (e.target === importModal) rejectImport(); });
 
+  function cancelPassword() { pendingRaw = null; clearShareParam(); closeModal(pwModal); }
+  async function submitPassword() {
+    if (!pendingRaw) return;
+    if (!pwInput.value.trim()) { pwError.textContent = 'パスワードを入力してください'; return; }
+    pwOkBtn.disabled = true;
+    pwError.textContent = '確認中…';
+    try {
+      const imp = sanitizeImport(await decodeSharePayload(pendingRaw, pwInput.value));
+      if (!imp) throw new Error('empty');
+      pendingRaw = null;
+      pwInput.value = '';
+      pwError.textContent = '';
+      closeModal(pwModal);
+      showImportModal(imp);
+    } catch (e) {
+      if (e && e.code === 'BAD_PASSWORD') {
+        pwError.textContent = 'パスワードが違います';
+        pwInput.select();
+      } else {
+        pendingRaw = null;
+        clearShareParam();
+        closeModal(pwModal);
+        alert('共有データを読み込めませんでした。URLが正しいかご確認ください。');
+      }
+    } finally {
+      pwOkBtn.disabled = false;
+    }
+  }
+  pwOkBtn.addEventListener('click', submitPassword);
+  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitPassword(); } });
+  document.getElementById('pwCancelBtn').addEventListener('click', cancelPassword);
+  pwModal.addEventListener('click', e => { if (e.target === pwModal) cancelPassword(); });
   window.addEventListener('hashchange', () => { checkImportParam(); });
 
   async function checkImportParam() {
     const raw = getShareParam();
-    if (!raw || pendingImport || importModal.classList.contains('open')) return;
+    if (!raw || pendingImport || pendingRaw || importModal.classList.contains('open') || pwModal.classList.contains('open')) return;
+    if (isEncryptedPayload(raw)) {
+      pendingRaw = raw;
+      pwInput.value = '';
+      pwError.textContent = '';
+      openModal(pwModal);
+      setTimeout(() => pwInput.focus(), 50);
+      return;
+    }
     try {
       const imp = sanitizeImport(await decodeSharePayload(raw));
       if (!imp) throw new Error('empty');
@@ -1689,7 +1806,7 @@ input,select,textarea {font-size: 16px !important;}
 
   [document.getElementById('openShareDataModal'), sdCopyBtn,
    document.getElementById('closeShareDataModal'), document.getElementById('impAcceptBtn'),
-   document.getElementById('impRejectBtn')].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
+   document.getElementById('impRejectBtn'), pwOkBtn, document.getElementById('pwCancelBtn')].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
   function handleDateClick(dk) {
 
