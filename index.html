@@ -378,6 +378,27 @@ tbody td { padding: 3px; text-align: center; vertical-align: middle; }
 .site-footer { text-align: center; margin-top: 40px; padding: 20px 0; color: var(--text-muted); font-size: 0.75rem; }
 input,select,textarea {font-size: 16px !important;}
 
+
+.sd-modal { width: min(460px, 94vw); }
+.sd-modal h2, .import-modal h2 { color: #3b82f6; }
+.import-modal { width: min(460px, 94vw); }
+.sd-opt { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+.sd-opt:has(input:disabled) { opacity: 0.45; cursor: default; }
+.sd-opt:has(input:disabled) .toggle-slider { cursor: default; }
+.sd-opt-body { flex: 1; min-width: 0; }
+.sd-opt-title { font-size: 0.85rem; color: var(--text); font-weight: 600; }
+.sd-opt-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; word-break: break-word; }
+.sd-note { font-size: 0.74rem; color: var(--text-muted); text-align: center; }
+.sd-note.warn { color: #f59e0b; }
+.import-desc { font-size: 0.82rem; color: var(--text-muted); text-align: center; line-height: 1.6; }
+.import-section { display: flex; flex-direction: column; gap: 6px; }
+.import-section-title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; }
+.import-list { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; }
+.import-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.82rem; color: var(--text); word-break: break-word; }
+.import-item small { display: block; color: var(--text-muted); font-size: 0.72rem; margin-top: 2px; }
+.import-item .dup { color: var(--text-muted); font-size: 0.7rem; margin-left: 6px; }
+.btn-accept { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; transition: background 0.2s; }
+.btn-accept:hover { background: rgba(59,130,246,0.28); }
 </style>
 </head>
 <body>
@@ -554,10 +575,10 @@ input,select,textarea {font-size: 16px !important;}
     </div>
 
     <div class="settings-section">
-      <div class="settings-section-title">有給の自動削除</div>
+      <div class="settings-section-title">有給・予定の自動削除</div>
       <div class="settings-row">
         <div>
-          <div class="settings-row-label">自動削除</div>
+          <div class="settings-row-label">有給の自動削除</div>
           <div class="settings-row-sub">過去の有給を自動で削除する</div>
         </div>
         <label class="toggle">
@@ -565,11 +586,21 @@ input,select,textarea {font-size: 16px !important;}
           <span class="toggle-slider"></span>
         </label>
       </div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">予定の自動削除</div>
+          <div class="settings-row-sub">過去の予定を自動で削除する</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="autoPurgeEventsToggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
       <div class="settings-row" id="purgeTimingRow">
         <div class="settings-row-label">削除タイミング</div>
         <select class="settings-select" id="purgeTimingSelect">
           <option value="month">月が替わったら</option>
-          <option value="day">有給日が過ぎたら</option>
+          <option value="day">その日が過ぎたら</option>
         </select>
       </div>
     </div>
@@ -590,6 +621,17 @@ input,select,textarea {font-size: 16px !important;}
           <div class="settings-row-sub">Outlook等で開けるICSファイルを作成</div>
         </div>
         <button class="btn-cancel" id="openIcsModal" style="padding:6px 14px;font-size:0.8rem;">ICS作成</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">予定の共有</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">班・有給・予定を共有</div>
+          <div class="settings-row-sub">データ入りのURLを作成して送れます</div>
+        </div>
+        <button class="btn-cancel" id="openShareDataModal" style="padding:6px 14px;font-size:0.8rem;">共有</button>
       </div>
     </div>
 
@@ -785,10 +827,68 @@ input,select,textarea {font-size: 16px !important;}
   </div>
 </div>
 
+<div class="modal-overlay" id="shareDataModal">
+  <div class="modal sd-modal">
+    <h2>予定を共有</h2>
+    <div class="import-desc">共有する内容を選ぶと、データ入りのURLが作成されます。<br>URLを開いた人に確認画面が表示されます。</div>
+    <label class="sd-opt">
+      <div class="sd-opt-body"><div class="sd-opt-title">班</div><div class="sd-opt-sub" id="sdTeamSub"></div></div>
+      <span class="toggle"><input type="checkbox" id="sdTeam" /><span class="toggle-slider"></span></span>
+    </label>
+    <label class="sd-opt">
+      <div class="sd-opt-body"><div class="sd-opt-title">有給</div><div class="sd-opt-sub" id="sdKyuukaSub"></div></div>
+      <span class="toggle"><input type="checkbox" id="sdKyuuka" /><span class="toggle-slider"></span></span>
+    </label>
+    <label class="sd-opt">
+      <div class="sd-opt-body"><div class="sd-opt-title">予定</div><div class="sd-opt-sub" id="sdEventsSub"></div></div>
+      <span class="toggle"><input type="checkbox" id="sdEvents" /><span class="toggle-slider"></span></span>
+    </label>
+    <div class="share-url-row">
+      <input type="text" class="share-url-input" id="sdUrlInput" readonly />
+      <button class="share-copy-btn" id="sdCopyBtn">コピー</button>
+    </div>
+    <div class="sd-note" id="sdNote"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="closeShareDataModal">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="importModal">
+  <div class="modal import-modal">
+    <h2>予定が共有されました</h2>
+    <div class="import-desc">以下の内容を受け入れますか？<br>受け入れると、あなたのカレンダーに追加されます。</div>
+    <div class="import-section" id="impTeamSec">
+      <label class="sd-opt">
+        <div class="sd-opt-body"><div class="sd-opt-title">班を変更する</div><div class="sd-opt-sub" id="impTeamSub"></div></div>
+        <span class="toggle"><input type="checkbox" id="impTeamCheck" checked /><span class="toggle-slider"></span></span>
+      </label>
+    </div>
+    <div class="import-section" id="impKyuukaSec">
+      <div class="import-section-title" id="impKyuukaTitle"></div>
+      <div class="import-list" id="impKyuukaList"></div>
+    </div>
+    <div class="import-section" id="impEventSec">
+      <div class="import-section-title" id="impEventTitle"></div>
+      <div class="import-list" id="impEventList"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="impRejectBtn">受け入れない</button>
+      <button class="btn-accept" id="impAcceptBtn">追加する</button>
+    </div>
+  </div>
+</div>
+
 <div id="printWrap" style="display:none"></div>
 <script>
 (() => {
   const NEWS_DATA = [
+    {
+      date: "2026-10-03",
+      type: "update",
+      title: "予定の共有を追加",
+      body: "設定 → 「予定の共有」から、班・有給・予定を含んだURLを作成して共有できます。<br>URLを開くと確認画面が表示され、「追加する」を押すと予定が追加されます。"
+    },
     {
       date: "2026-08-22",
       type: "update",
@@ -924,7 +1024,8 @@ input,select,textarea {font-size: 16px !important;}
     newsRead:    "shiftNewsRead",
     autoPurge:   "shiftAutoPurge",
     purgeTiming: "shiftPurgeTiming",
-    events:      "shiftEvents"
+    events:      "shiftEvents",
+    autoPurgeEvents: "shiftAutoPurgeEvents"
   };
 
   const KEY_LABELS = {
@@ -935,7 +1036,8 @@ input,select,textarea {font-size: 16px !important;}
     [KEYS.newsRead]:    "お知らせ既読",
     [KEYS.autoPurge]:   "有給自動削除",
     [KEYS.purgeTiming]: "削除タイミング",
-    [KEYS.events]:       "予定データ"
+    [KEYS.events]:       "予定データ",
+    [KEYS.autoPurgeEvents]: "予定自動削除"
   };
 
   function dateKey(date) {
@@ -950,6 +1052,8 @@ input,select,textarea {font-size: 16px !important;}
     today = now;
     startYear = today.getFullYear();
     startMonth = today.getMonth();
+    purgePastKyuuka();
+    purgePastEvents();
     render();
   }
 
@@ -1005,6 +1109,7 @@ input,select,textarea {font-size: 16px !important;}
   const themeToggleBtn  = document.getElementById('themeToggleInSettings');
   const themeModeLabel  = document.getElementById('themeModeLabel');
   const autoPurgeToggle = document.getElementById('autoPurgeToggle');
+  const autoPurgeEventsToggle = document.getElementById('autoPurgeEventsToggle');
   const purgeTimingRow  = document.getElementById('purgeTimingRow');
   const purgeTimingSelect=document.getElementById('purgeTimingSelect');
   const openDataBtn        = document.getElementById('openDataModal');
@@ -1060,17 +1165,22 @@ input,select,textarea {font-size: 16px !important;}
   printMonthSel.value = today.getMonth();
 
   const savedTeam = localStorage.getItem(KEYS.team);
-  if (savedTeam && (teamBaseDates[savedTeam] || savedTeam === "ALL")) teamSelect.value = savedTeam;
+  if (savedTeam && (Object.prototype.hasOwnProperty.call(teamBaseDates, savedTeam) || savedTeam === "ALL")) teamSelect.value = savedTeam;
   const savedMonths = localStorage.getItem(KEYS.months);
   if (savedMonths) monthsSelect.value = savedMonths;
   const savedTheme = localStorage.getItem(KEYS.theme);
   if (savedTheme === "light") document.documentElement.classList.add("light");
   const savedAutoPurge = localStorage.getItem(KEYS.autoPurge);
   autoPurgeToggle.checked = savedAutoPurge !== "off";
+  autoPurgeEventsToggle.checked = localStorage.getItem(KEYS.autoPurgeEvents) !== "off";
   const savedTiming = localStorage.getItem(KEYS.purgeTiming) || "month";
   purgeTimingSelect.value = savedTiming;
-  purgeTimingRow.style.opacity = autoPurgeToggle.checked ? "1" : "0.4";
-  purgeTimingRow.style.pointerEvents = autoPurgeToggle.checked ? "auto" : "none";
+  function updatePurgeTimingRow() {
+    const on = autoPurgeToggle.checked || autoPurgeEventsToggle.checked;
+    purgeTimingRow.style.opacity = on ? "1" : "0.4";
+    purgeTimingRow.style.pointerEvents = on ? "auto" : "none";
+  }
+  updatePurgeTimingRow();
 
   function openModal(modal) {
     modal.classList.add('open');
@@ -1098,11 +1208,18 @@ input,select,textarea {font-size: 16px !important;}
 
   autoPurgeToggle.addEventListener('change', () => {
     localStorage.setItem(KEYS.autoPurge, autoPurgeToggle.checked ? "on" : "off");
-    purgeTimingRow.style.opacity = autoPurgeToggle.checked ? "1" : "0.4";
-    purgeTimingRow.style.pointerEvents = autoPurgeToggle.checked ? "auto" : "none";
+    updatePurgeTimingRow();
+  });
+  autoPurgeEventsToggle.addEventListener('change', () => {
+    localStorage.setItem(KEYS.autoPurgeEvents, autoPurgeEventsToggle.checked ? "on" : "off");
+    updatePurgeTimingRow();
+    if (autoPurgeEventsToggle.checked) { purgePastEvents(); render(); }
   });
   purgeTimingSelect.addEventListener('change', () => {
     localStorage.setItem(KEYS.purgeTiming, purgeTimingSelect.value);
+    purgePastKyuuka();
+    purgePastEvents();
+    render();
   });
 
   function diffDays(a, b) {
@@ -1269,6 +1386,311 @@ input,select,textarea {font-size: 16px !important;}
   closeEventListBtn.addEventListener('click', () => closeModal(eventListModal));
   eventListModal.addEventListener('click', e => { if (e.target === eventListModal) closeModal(eventListModal); });
 
+
+  function purgePastEvents() {
+    if (localStorage.getItem(KEYS.autoPurgeEvents) === "off") return;
+    const timing = localStorage.getItem(KEYS.purgeTiming) || "month";
+    const all = loadEvents();
+    const todayKey = dateKey(today);
+    const monthKey = todayKey.slice(0, 7);
+    let changed = false;
+    Object.keys(all).forEach(dk => {
+      const keep = timing === "day" ? dk >= todayKey : dk.slice(0, 7) >= monthKey;
+      if (!keep) { delete all[dk]; changed = true; }
+    });
+    if (changed) saveEvents(all);
+  }
+  purgePastEvents();
+
+  const SHARE_PARAM = 'share';
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+  function isValidDateStr(d) {
+    if (typeof d !== 'string' || !DATE_RE.test(d)) return false;
+    const [y, m, day] = d.split('-').map(Number);
+    if (y < 2000 || y > 2100) return false;
+    const dt = new Date(y, m - 1, day);
+    return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === day;
+  }
+  const isTimeStr = t => typeof t === 'string' && TIME_RE.test(t);
+  const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  function bytesToB64url(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function b64urlToBytes(str) {
+    let s = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    const bin = atob(s);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  const MAX_PARAM_LEN = 30000;
+  const MAX_DECODED_BYTES = 300000;
+  async function streamBytes(bytes, stream, limit = Infinity) {
+    const reader = new Blob([bytes]).stream().pipeThrough(stream).getReader();
+    const chunks = [];
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.length;
+      if (total > limit) { reader.cancel().catch(() => {}); throw new Error('too large'); }
+      chunks.push(value);
+    }
+    const out = new Uint8Array(total);
+    let off = 0;
+    chunks.forEach(c => { out.set(c, off); off += c.length; });
+    return out;
+  }
+  async function encodeSharePayload(obj) {
+    const raw = new TextEncoder().encode(JSON.stringify(obj));
+    if (typeof CompressionStream !== 'undefined') {
+      try { return 'z' + bytesToB64url(await streamBytes(raw, new CompressionStream('deflate-raw'))); } catch {}
+    }
+    return 'j' + bytesToB64url(raw);
+  }
+  async function decodeSharePayload(str) {
+    if (typeof str !== 'string' || str.length < 2 || str.length > MAX_PARAM_LEN) throw new Error('bad length');
+    const kind = str[0];
+    let bytes = b64urlToBytes(str.slice(1));
+    if (kind === 'z') bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'), MAX_DECODED_BYTES);
+    else if (kind !== 'j') throw new Error('unknown format');
+    if (bytes.length > MAX_DECODED_BYTES) throw new Error('too large');
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  function teamLabelOf(val) {
+    const opt = teamSelect.querySelector(`option[value="${val}"]`);
+    return opt ? opt.textContent : val;
+  }
+  function countEvents() {
+    const all = loadEvents();
+    return Object.keys(all).reduce((n, k) => n + (Array.isArray(all[k]) ? all[k].length : 0), 0);
+  }
+
+  const shareDataModal = document.getElementById('shareDataModal');
+  const sdTeam = document.getElementById('sdTeam');
+  const sdKyuuka = document.getElementById('sdKyuuka');
+  const sdEvents = document.getElementById('sdEvents');
+  const sdUrlInput = document.getElementById('sdUrlInput');
+  const sdCopyBtn = document.getElementById('sdCopyBtn');
+  const sdNote = document.getElementById('sdNote');
+
+  function buildSharePayload() {
+    const p = { v: 1 };
+    if (sdTeam.checked) p.t = teamSelect.value;
+    if (sdKyuuka.checked) p.k = loadKyuuka().sort();
+    if (sdEvents.checked) {
+      const all = loadEvents();
+      p.e = [];
+      Object.keys(all).sort().forEach(dk => (all[dk] || []).forEach(ev => p.e.push([dk, ev.title, ev.start || '', ev.end || '', ev.memo || ''])));
+    }
+    return p;
+  }
+
+  let sdSeq = 0;
+  async function refreshShareData() {
+    const seq = ++sdSeq;
+    const none = !sdTeam.checked && !sdKyuuka.checked && !sdEvents.checked;
+    sdNote.className = 'sd-note';
+    if (none) {
+      sdUrlInput.value = '';
+      sdNote.textContent = '共有する内容を選んでください';
+      return;
+    }
+    const encoded = await encodeSharePayload(buildSharePayload());
+    if (seq !== sdSeq) return;
+    const url = `${location.origin}${location.pathname}#${SHARE_PARAM}=${encoded}`;
+    sdUrlInput.value = url;
+    sdCopyBtn.textContent = 'コピー';
+    sdCopyBtn.classList.remove('copied');
+    sdNote.textContent = '';
+    if (url.length > 8000) {
+      sdNote.className = 'sd-note warn';
+      sdNote.textContent = 'データが多いため、一部のアプリではURLを開けない可能性があります。内容を減らしてください。';
+    }
+  }
+
+  function openShareDataModal() {
+    const k = loadKyuuka(), ec = countEvents();
+    sdTeam.checked = true;
+    sdKyuuka.checked = k.length > 0;
+    sdEvents.checked = ec > 0;
+    sdKyuuka.disabled = k.length === 0;
+    sdEvents.disabled = ec === 0;
+    document.getElementById('sdTeamSub').textContent = teamLabelOf(teamSelect.value);
+    document.getElementById('sdKyuukaSub').textContent = k.length ? `${k.length}件` : '有給の登録はありません';
+    document.getElementById('sdEventsSub').textContent = ec ? `${ec}件` : '予定の登録はありません';
+    refreshShareData();
+    openModal(shareDataModal);
+  }
+  [sdTeam, sdKyuuka, sdEvents].forEach(c => c.addEventListener('change', refreshShareData));
+  document.getElementById('openShareDataModal').addEventListener('click', openShareDataModal);
+  document.getElementById('closeShareDataModal').addEventListener('click', () => closeModal(shareDataModal));
+  shareDataModal.addEventListener('click', e => { if (e.target === shareDataModal) closeModal(shareDataModal); });
+
+  sdCopyBtn.addEventListener('click', () => {
+    if (!sdUrlInput.value) return;
+    const showCopied = () => {
+      sdCopyBtn.textContent = 'コピーしました';
+      sdCopyBtn.classList.add('copied');
+      setTimeout(() => { sdCopyBtn.textContent = 'コピー'; sdCopyBtn.classList.remove('copied'); }, 1800);
+    };
+    const fallback = () => {
+      sdUrlInput.removeAttribute('readonly');
+      sdUrlInput.select();
+      sdUrlInput.setSelectionRange(0, 999999);
+      try { document.execCommand('copy'); } catch {}
+      sdUrlInput.setAttribute('readonly', 'readonly');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(sdUrlInput.value).then(showCopied).catch(() => { fallback(); showCopied(); });
+    } else { fallback(); showCopied(); }
+  });
+
+  const importModal = document.getElementById('importModal');
+  let pendingImport = null;
+
+  function getShareParam() {
+    try {
+      const h = new URLSearchParams(location.hash.replace(/^#/, '')).get(SHARE_PARAM);
+      if (h) return h;
+      return new URLSearchParams(location.search).get(SHARE_PARAM);
+    } catch { return null; }
+  }
+  function clearShareParam() {
+    try {
+      const u = new URL(location.href);
+      u.searchParams.delete(SHARE_PARAM);
+      history.replaceState(null, '', u.pathname + (u.search || ''));
+    } catch {}
+  }
+
+  function sanitizeImport(data) {
+    if (!data || typeof data !== 'object') return null;
+    const out = { team: null, kyuuka: [], events: [] };
+    if (typeof data.t === 'string' && (hasOwn(teamBaseDates, data.t) || data.t === 'ALL')) out.team = data.t;
+    if (Array.isArray(data.k)) {
+      data.k.slice(0, 400).forEach(d => { if (isValidDateStr(d)) out.kyuuka.push(d); });
+      out.kyuuka = [...new Set(out.kyuuka)].sort();
+    }
+    if (Array.isArray(data.e)) {
+      data.e.slice(0, 500).forEach(r => {
+        if (!Array.isArray(r) || !isValidDateStr(r[0]) || typeof r[1] !== 'string') return;
+        const title = r[1].trim().slice(0, 100);
+        if (!title) return;
+        const start = isTimeStr(r[2]) ? r[2] : '';
+        const end = isTimeStr(r[3]) ? r[3] : '';
+        const memo = typeof r[4] === 'string' ? r[4].trim().slice(0, 500) : '';
+        out.events.push({ dk: r[0], title, start, end, memo });
+      });
+    }
+    if (!out.team && !out.kyuuka.length && !out.events.length) return null;
+    return out;
+  }
+
+  const evSig = (dk, e) => `${dk}|${e.title}|${e.start || ''}|${e.end || ''}`;
+
+  function showImportModal(imp) {
+    pendingImport = imp;
+    const teamSec = document.getElementById('impTeamSec');
+    teamSec.style.display = imp.team ? '' : 'none';
+    if (imp.team) {
+      document.getElementById('impTeamSub').textContent = `${teamLabelOf(teamSelect.value)} → ${teamLabelOf(imp.team)}`;
+      document.getElementById('impTeamCheck').checked = imp.team !== teamSelect.value;
+    }
+
+    const curK = new Set(loadKyuuka());
+    const kSec = document.getElementById('impKyuukaSec');
+    kSec.style.display = imp.kyuuka.length ? '' : 'none';
+    const newK = imp.kyuuka.filter(d => !curK.has(d));
+    document.getElementById('impKyuukaTitle').textContent = `有給 ${imp.kyuuka.length}件（新規 ${newK.length}件）`;
+    const kList = document.getElementById('impKyuukaList');
+    kList.innerHTML = '';
+    imp.kyuuka.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'import-item';
+      div.innerHTML = `${formatDateLabel(d)}${curK.has(d) ? '<span class="dup">登録済み</span>' : ''}`;
+      kList.appendChild(div);
+    });
+
+    const cur = loadEvents();
+    const curSigs = new Set();
+    Object.keys(cur).forEach(dk => (cur[dk] || []).forEach(e => curSigs.add(evSig(dk, e))));
+    const eSec = document.getElementById('impEventSec');
+    eSec.style.display = imp.events.length ? '' : 'none';
+    const newE = imp.events.filter(e => !curSigs.has(evSig(e.dk, e)));
+    document.getElementById('impEventTitle').textContent = `予定 ${imp.events.length}件（新規 ${newE.length}件）`;
+    const eList = document.getElementById('impEventList');
+    eList.innerHTML = '';
+    imp.events.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'import-item';
+      const time = (e.start || e.end) ? `　${e.start || '--:--'} 〜 ${e.end || '--:--'}` : '';
+      div.innerHTML = `<strong>${escapeHtml(e.title)}</strong>${curSigs.has(evSig(e.dk, e)) ? '<span class="dup">登録済み</span>' : ''}<small>${formatDateLabel(e.dk)}${time}</small>${e.memo ? `<small>${escapeHtml(e.memo)}</small>` : ''}`;
+      eList.appendChild(div);
+    });
+    openModal(importModal);
+  }
+
+  document.getElementById('impAcceptBtn').addEventListener('click', () => {
+    const imp = pendingImport;
+    if (!imp) return;
+    if (imp.team && document.getElementById('impTeamCheck').checked) {
+      teamSelect.value = imp.team;
+      localStorage.setItem(KEYS.team, imp.team);
+    }
+    if (imp.kyuuka.length) {
+      const set = new Set(loadKyuuka());
+      imp.kyuuka.forEach(d => set.add(d));
+      saveKyuuka([...set]);
+    }
+    if (imp.events.length) {
+      const all = loadEvents();
+      const sigs = new Set();
+      Object.keys(all).forEach(dk => (all[dk] || []).forEach(e => sigs.add(evSig(dk, e))));
+      imp.events.forEach(e => {
+        if (sigs.has(evSig(e.dk, e))) return;
+        if (!all[e.dk]) all[e.dk] = [];
+        all[e.dk].push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`, title: e.title, start: e.start, end: e.end, memo: e.memo });
+        sigs.add(evSig(e.dk, e));
+      });
+      saveEvents(all);
+    }
+    pendingImport = null;
+    clearShareParam();
+    closeModal(importModal);
+    purgePastKyuuka();
+    purgePastEvents();
+    render();
+  });
+  function rejectImport() { pendingImport = null; clearShareParam(); closeModal(importModal); }
+  document.getElementById('impRejectBtn').addEventListener('click', rejectImport);
+  importModal.addEventListener('click', e => { if (e.target === importModal) rejectImport(); });
+
+  window.addEventListener('hashchange', () => { checkImportParam(); });
+
+  async function checkImportParam() {
+    const raw = getShareParam();
+    if (!raw || pendingImport || importModal.classList.contains('open')) return;
+    try {
+      const imp = sanitizeImport(await decodeSharePayload(raw));
+      if (!imp) throw new Error('empty');
+      showImportModal(imp);
+    } catch (e) {
+      clearShareParam();
+      alert('共有データを読み込めませんでした。URLが正しいかご確認ください。');
+    }
+  }
+
+  [document.getElementById('openShareDataModal'), sdCopyBtn,
+   document.getElementById('closeShareDataModal'), document.getElementById('impAcceptBtn'),
+   document.getElementById('impRejectBtn')].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
+
   function handleDateClick(dk) {
 
     const events = getEventsForDate(dk);
@@ -1309,7 +1731,7 @@ input,select,textarea {font-size: 16px !important;}
     document.getElementById('storageNote').textContent = `全体 ${(totalBytes/1024).toFixed(1)} KB / 上限 5 MB`;
   }
 
-  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.purgeTiming];
+  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.autoPurgeEvents, KEYS.purgeTiming];
 
   function renderSettingsData() {
     dataListSettingsEl.innerHTML = '';
@@ -2094,7 +2516,7 @@ input,select,textarea {font-size: 16px !important;}
   ]).then(([dayData, holidayData]) => {
     teamBaseDates = { ...teamBaseDates, ...dayData };
     HOLIDAYS = { ...HOLIDAYS, ...holidayData };
-  }).finally(() => { updateBadge(); render(); });
+  }).finally(() => { updateBadge(); render(); checkImportParam(); });
 })();
 </script>
 <footer class="site-footer"><small>Created by S │ THX</small></footer>
