@@ -533,6 +533,14 @@ html.beta .month.single-team tbody td { padding: 1px; vertical-align: top; }
 html.beta .month.single-team .cell-inner { justify-content: flex-start; min-height: 76px; padding: 4px 1px 3px; }
 html.beta .cell-inner .event-dot-row { display: none; }
 html.beta .ev-chips { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 3px; }
+html.beta .holiday-name {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden; word-break: break-all; text-align: left; width: 100%;
+  font-size: 0.62rem; line-height: 1.25; font-weight: 600;
+  padding: 1px 3px; margin-top: 2px; border-radius: 4px;
+  background: rgba(56, 189, 248, 0.16); color: #38bdf8;
+  border-left: 2px solid #38bdf8;
+}
 html.beta .ev-chip { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; text-align: left; font-size: 0.62rem; line-height: 1.25; font-weight: 600; padding: 1px 3px; border-radius: 4px; background: var(--accent-tint); color: var(--accent); border-left: 2px solid var(--accent); }
 html.beta .ev-more { font-size: 0.58rem; color: var(--text-muted); text-align: center; line-height: 1.2; }
 @media (max-width: 600px) {
@@ -1307,6 +1315,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   betaUiToggle.addEventListener('change', () => {
     localStorage.setItem(KEYS.beta, betaUiToggle.checked ? "on" : "off");
     document.documentElement.classList.toggle("beta", betaUiToggle.checked);
+    render();
   });
   const purgeTimingRow  = document.getElementById('purgeTimingRow');
   const purgeTimingSelect=document.getElementById('purgeTimingSelect');
@@ -2687,7 +2696,10 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
         const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
         const dayEvs = getEventsForDate(dk);
         const chipHTML = dayEvs.length ? `<div class="ev-chips">${dayEvs.slice(0, 2).map(e => `<span class="ev-chip">${escapeHtml(e.title)}</span>`).join('')}${dayEvs.length > 2 ? `<span class="ev-more">他${dayEvs.length - 2}件</span>` : ''}</div>` : '';
-        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}${chipHTML}</div>`;
+        const holidayHTML = document.documentElement.classList.contains('beta') && holi
+          ? `<div class="holiday-name">${escapeHtml(holi)}</div>`
+          : '';
+        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}${chipHTML}${holidayHTML}</div>`;
         td.querySelector('.cell-inner').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
