@@ -553,6 +553,8 @@ html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) { align-
 @media (max-width: 600px) {
   html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) .modal { width: calc(100% - 24px) !important; border-radius: 24px; max-height: 86dvh; }
 }
+html.kb-open .modal-overlay.open { inset: var(--vvt, 0px) 0 auto 0; height: var(--vvh, 100%); align-items: flex-start !important; padding: 8px 0; }
+html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16px) !important; overflow-y: auto; }
 </style>
 <script>try{if(localStorage.getItem("shiftBetaUI")==="on")document.documentElement.classList.add("beta")}catch(e){}</script>
 </head>
@@ -2816,6 +2818,26 @@ html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) { align-
     teamBaseDates = { ...teamBaseDates, ...dayData };
     HOLIDAYS = { ...HOLIDAYS, ...holidayData };
   }).finally(() => { updateBadge(); render(); checkImportParam(); });
+})();
+
+(function () {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const root = document.documentElement;
+  let raf = 0;
+  function fit() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const kb = vv.scale <= 1.01 && (window.innerHeight - vv.height) > 120;
+      root.style.setProperty('--vvh', vv.height + 'px');
+      root.style.setProperty('--vvt', vv.offsetTop + 'px');
+      root.classList.toggle('kb-open', kb && !!document.querySelector('.modal-overlay.open'));
+    });
+  }
+  vv.addEventListener('resize', fit);
+  vv.addEventListener('scroll', fit);
+  document.addEventListener('focusin', () => setTimeout(fit, 50));
+  document.addEventListener('focusout', () => setTimeout(fit, 150));
 })();
 </script>
 <footer class="site-footer"><small>Created by S │ THX</small></footer>
