@@ -543,6 +543,16 @@ html.beta .modal { width: 100% !important; max-width: none; border-radius: 24px 
 html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
 }
 .ev-chips { display: none; }
+@media (max-width: 600px) {
+  input:not([readonly]), select, textarea { font-size: 16px !important; }
+}
+@supports (height: 100dvh) {
+  .modal { max-height: 90dvh; }
+}
+html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) { align-items: center; }
+@media (max-width: 600px) {
+  html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) .modal { width: calc(100% - 24px) !important; border-radius: 24px; max-height: 86dvh; }
+}
 </style>
 <script>try{if(localStorage.getItem("shiftBetaUI")==="on")document.documentElement.classList.add("beta")}catch(e){}</script>
 </head>
@@ -1368,14 +1378,22 @@ html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
   }
   updatePurgeTimingRow();
 
+  let lockScrollY = 0;
   function openModal(modal) {
+    if (!document.querySelector('.modal-overlay.open')) {
+      lockScrollY = window.scrollY;
+      const b = document.body.style;
+      b.position = 'fixed'; b.top = `-${lockScrollY}px`; b.left = '0'; b.right = '0';
+    }
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   function closeModal(modal) {
     modal.classList.remove('open');
     if (!document.querySelector('.modal-overlay.open')) {
-      document.body.style.overflow = '';
+      const b = document.body.style;
+      b.overflow = ''; b.position = ''; b.top = ''; b.left = ''; b.right = '';
+      window.scrollTo(0, lockScrollY);
     }
   }
 
@@ -1497,7 +1515,7 @@ html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
     eventEndTimeInput.value = '10:00';
     eventMemoInput.value = '';
     openModal(eventAddModal);
-    setTimeout(() => eventTitleInput.focus(), 150);
+    setTimeout(() => eventTitleInput.focus({ preventScroll: true }), 150);
   }
 
   function escapeHtml(str) {
@@ -1509,7 +1527,7 @@ html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
 
   saveEventBtn.addEventListener('click', () => {
     const title = eventTitleInput.value.trim();
-    if (!title) { eventTitleInput.focus(); return; }
+    if (!title) { eventTitleInput.focus({ preventScroll: true }); return; }
     const all = loadEvents();
     if (!all[currentEventDate]) all[currentEventDate] = [];
     all[currentEventDate].push({
@@ -1953,7 +1971,7 @@ html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
       pwInput.value = '';
       pwError.textContent = '';
       openModal(pwModal);
-      setTimeout(() => pwInput.focus(), 50);
+      setTimeout(() => pwInput.focus({ preventScroll: true }), 50);
       return;
     }
     try {
