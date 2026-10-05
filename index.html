@@ -405,7 +405,146 @@ input,select,textarea {font-size: 16px !important;}
 .sd-pw-input:focus { border-color: #3b82f6; }
 .sd-pw-input:disabled { opacity: 0.45; }
 .pw-error { font-size: 0.78rem; color: #ef4444; text-align: center; min-height: 1.1em; }
+html.beta {
+  --bg: #000000; --surface: #1C1C1E; --surface2: #2C2C2E; --border: #38383A;
+  --text: #FFFFFF; --text-muted: #98989D;
+  --today-bg: transparent; --today-border: transparent;
+  --accent: #FF3355; --accent-hover: #FF5C77; --accent-on: #FFFFFF; --accent-tint: rgba(255,51,85,0.16);
+  --danger: #FF6B81; --danger-bg: rgba(255,51,85,0.16); --switch-on: #34C759;
+  --shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+html.beta.light {
+  --bg: #F2F2F7; --surface: #FFFFFF; --surface2: #F2F2F7; --border: #E5E5EA;
+  --text: #111111; --text-muted: #6C6C70;
+  --accent: #FF0033; --accent-hover: #E6002E; --accent-tint: rgba(255,0,51,0.08);
+  --danger: #D70015; --danger-bg: rgba(255,0,51,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.04);
+}
+html.beta body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic UI', sans-serif; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+html.beta header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+html.beta header p { letter-spacing: 0; }
+html.beta .controls { border: none; border-radius: 20px; padding: 14px 18px; box-shadow: var(--shadow); }
+html.beta select,
+html.beta .month-label,
+html.beta .kyuuka-input,
+html.beta .event-input,
+html.beta .event-input[type="time"],
+html.beta .day-num,
+html.beta .all-day-num,
+html.beta .event-list-item-time,
+html.beta .kyuuka-list-item-date { font-family: inherit; }
+html.beta .month-label { font-weight: 700; font-size: 1rem; letter-spacing: 0; }
+html.beta select,
+html.beta .sd-pw-input,
+html.beta .share-url-input,
+html.beta .kyuuka-input,
+html.beta .event-input,
+html.beta .modal input[type="text"],
+html.beta .modal input[type="password"],
+html.beta .modal textarea {
+  background: var(--surface2); color: var(--text); border: 1px solid transparent; border-radius: 12px;
+}
+html.beta select:focus,
+html.beta .sd-pw-input:focus,
+html.beta .kyuuka-input:focus,
+html.beta .event-input:focus,
+html.beta .modal input:focus,
+html.beta .modal textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); outline: none; }
+html.beta :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+html.beta .nav-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); color: var(--text); border: none; box-shadow: none; }
+html.beta .nav-btn:hover { background: var(--border); }
+html.beta .today-btn,
+html.beta .settings-btn,
+html.beta .print-btn,
+html.beta .news-btn,
+html.beta .spec-btn,
+html.beta .spec-link-btn,
+html.beta .kyuuka-btn,
+html.beta .btn-cancel {
+  background: var(--surface2); color: var(--text); border: none; border-radius: 999px; font-weight: 600; box-shadow: none; transition: background 0.15s;
+}
+html.beta .today-btn { color: var(--accent); }
+html.beta .settings-btn { border-radius: 50%; width: 36px; height: 36px; }
+html.beta .today-btn:hover,
+html.beta .settings-btn:hover,
+html.beta .print-btn:hover,
+html.beta .news-btn:hover,
+html.beta .spec-btn:hover,
+html.beta .spec-link-btn:hover,
+html.beta .kyuuka-btn:hover,
+html.beta .btn-cancel:hover { background: var(--border); color: var(--text); }
+html.beta .today-btn:hover { color: var(--accent); }
+html.beta .btn-accept,
+html.beta .btn-print,
+html.beta .share-copy-btn {
+  background: var(--accent); color: var(--accent-on); border: none; border-radius: 999px; font-weight: 700; padding: 11px 24px;
+}
+html.beta .btn-accept:hover,
+html.beta .btn-print:hover,
+html.beta .share-copy-btn:hover,
+html.beta .share-copy-btn.copied { background: var(--accent-hover); color: var(--accent-on); }
+html.beta .btn-danger { background: var(--danger-bg); color: var(--danger); border: none; border-radius: 999px; font-weight: 700; }
+html.beta .btn-danger:hover { background: var(--danger); color: #fff; }
+html.beta .modal-overlay { background: rgba(0,0,0,0.4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+html.beta .modal { border: none; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+html.beta .modal h2,
+html.beta .sd-modal h2,
+html.beta .import-modal h2,
+html.beta .news-modal-header h2,
+html.beta .spec-modal-header h2,
+html.beta .kyuuka-modal h2,
+html.beta .event-modal h2,
+html.beta .event-list-modal h2 { color: var(--text); font-size: 1.1rem; font-weight: 700; letter-spacing: 0; }
+html.beta .news-modal-header h2::before { background: var(--accent); box-shadow: none; }
+html.beta .sd-opt,
+html.beta .import-item,
+html.beta .kyuuka-list-item,
+html.beta .event-list-item { background: var(--surface2); border: none; border-radius: 14px; }
+html.beta .event-list-item { border-left: 4px solid var(--accent); }
+html.beta .event-list-item-time { color: var(--accent); }
+html.beta .event-dot { background: var(--accent); }
+html.beta .toggle input:checked + .toggle-slider,
+html.beta .event-toggle input:checked + .event-toggle-slider { background: var(--switch-on); border-color: var(--switch-on); }
+html.beta .toggle input:checked + .toggle-slider::before,
+html.beta .event-toggle input:checked + .event-toggle-slider::before { background: #fff; }
+html.beta .sd-note.warn,
+html.beta .pw-error { color: var(--danger); }
+html.beta .month { border: none; border-radius: 22px; padding: 22px; box-shadow: var(--shadow); }
+html.beta .month h3 { text-align: left; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 14px; }
+html.beta .cell-inner,
+html.beta .cell-all { border-radius: 12px; }
+html.beta .cell-inner:hover,
+html.beta .cell-all:hover { background: var(--surface2); }
+html.beta .day-num,
+html.beta .all-day-num { display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 500; }
+html.beta .day-num { width: 26px; height: 26px; font-size: 0.92rem; }
+html.beta .all-day-num { width: 22px; height: 22px; font-size: 0.78rem; }
+html.beta .today .cell-inner,
+html.beta .today .cell-all { background: transparent; box-shadow: none; }
+html.beta .today .day-num,
+html.beta .today .all-day-num { background: var(--accent); color: #fff; font-weight: 700; }
+html.beta .day-shift,
+html.beta .shift-badge { border-radius: 6px; }
+html.beta .cell-all.kyuuka-day { box-shadow: none; border-radius: 12px; }
+html.beta .legend-item { font-size: 0.8rem; }
+html.beta .month.single-team { width: 560px; max-width: 100%; }
+html.beta .month.single-team table { table-layout: fixed; }
+html.beta .month.single-team tbody td { padding: 1px; vertical-align: top; }
+html.beta .month.single-team .cell-inner { justify-content: flex-start; min-height: 76px; padding: 4px 1px 3px; }
+html.beta .cell-inner .event-dot-row { display: none; }
+html.beta .ev-chips { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 3px; }
+html.beta .ev-chip { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; text-align: left; font-size: 0.62rem; line-height: 1.25; font-weight: 600; padding: 1px 3px; border-radius: 4px; background: var(--accent-tint); color: var(--accent); border-left: 2px solid var(--accent); }
+html.beta .ev-more { font-size: 0.58rem; color: var(--text-muted); text-align: center; line-height: 1.2; }
+@media (max-width: 600px) {
+html.beta body { padding-left: 10px; padding-right: 10px; }
+html.beta .month.single-team { padding: 14px 6px; }
+html.beta .modal-overlay { align-items: flex-end; }
+html.beta .modal { width: 100% !important; max-width: none; border-radius: 24px 24px 0 0; max-height: 88vh; }
+html.beta .month.single-team, html.beta .month.all-team { width: 100%; }
+}
+.ev-chips { display: none; }
 </style>
+<script>try{if(localStorage.getItem("shiftBetaUI")==="on")document.documentElement.classList.add("beta")}catch(e){}</script>
 </head>
 <body>
 <header>
@@ -577,6 +716,20 @@ input,select,textarea {font-size: 16px !important;}
             <span class="tt-thumb"></span>
           </button>
         </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">βテスト</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">新UI</div>
+          <div class="settings-row-sub">開発中の新しいデザインを試せます</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="betaUiToggle" />
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
 
@@ -836,7 +989,7 @@ input,select,textarea {font-size: 16px !important;}
 <div class="modal-overlay" id="shareDataModal">
   <div class="modal sd-modal">
     <h2>予定を共有</h2>
-    <div class="import-desc">共有する内容を選ぶと、データ入りのURLが作成されます。<br>URLを開いた人に確認画面が表示されます。</div>
+    <div class="import-desc">共有する内容を選ぶと、データ入りのURLが作成されます。<br>URLを開いた人に予定を共有できます。</div>
     <label class="sd-opt">
       <div class="sd-opt-body"><div class="sd-opt-title">班</div><div class="sd-opt-sub" id="sdTeamSub"></div></div>
       <span class="toggle"><input type="checkbox" id="sdTeam" /><span class="toggle-slider"></span></span>
@@ -868,7 +1021,7 @@ input,select,textarea {font-size: 16px !important;}
 <div class="modal-overlay" id="pwModal">
   <div class="modal import-modal">
     <h2>パスワードが必要です</h2>
-    <div class="import-desc">この共有はパスワードで保護されています。<br>送り主から聞いたパスワードを入力してください。</div>
+    <div class="import-desc">この共有はパスワードで保護されています。<br>パスワードを入力してください。</div>
     <input type="password" class="sd-pw-input" id="pwInput" placeholder="パスワード" autocomplete="off" maxlength="64" />
     <div class="pw-error" id="pwError"></div>
     <div class="modal-btns">
@@ -1049,7 +1202,8 @@ input,select,textarea {font-size: 16px !important;}
     autoPurge:   "shiftAutoPurge",
     purgeTiming: "shiftPurgeTiming",
     events:      "shiftEvents",
-    autoPurgeEvents: "shiftAutoPurgeEvents"
+    autoPurgeEvents: "shiftAutoPurgeEvents",
+    beta: "shiftBetaUI"
   };
 
   const KEY_LABELS = {
@@ -1061,7 +1215,8 @@ input,select,textarea {font-size: 16px !important;}
     [KEYS.autoPurge]:   "有給自動削除",
     [KEYS.purgeTiming]: "削除タイミング",
     [KEYS.events]:       "予定データ",
-    [KEYS.autoPurgeEvents]: "予定自動削除"
+    [KEYS.autoPurgeEvents]: "予定自動削除",
+    [KEYS.beta]: "βテスト（新UI）"
   };
 
   function dateKey(date) {
@@ -1134,6 +1289,13 @@ input,select,textarea {font-size: 16px !important;}
   const themeModeLabel  = document.getElementById('themeModeLabel');
   const autoPurgeToggle = document.getElementById('autoPurgeToggle');
   const autoPurgeEventsToggle = document.getElementById('autoPurgeEventsToggle');
+  const betaUiToggle = document.getElementById('betaUiToggle');
+  betaUiToggle.checked = localStorage.getItem(KEYS.beta) === "on";
+  document.documentElement.classList.toggle("beta", betaUiToggle.checked);
+  betaUiToggle.addEventListener('change', () => {
+    localStorage.setItem(KEYS.beta, betaUiToggle.checked ? "on" : "off");
+    document.documentElement.classList.toggle("beta", betaUiToggle.checked);
+  });
   const purgeTimingRow  = document.getElementById('purgeTimingRow');
   const purgeTimingSelect=document.getElementById('purgeTimingSelect');
   const openDataBtn        = document.getElementById('openDataModal');
@@ -1848,7 +2010,7 @@ input,select,textarea {font-size: 16px !important;}
     document.getElementById('storageNote').textContent = `全体 ${(totalBytes/1024).toFixed(1)} KB / 上限 5 MB`;
   }
 
-  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.autoPurgeEvents, KEYS.purgeTiming];
+  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.autoPurgeEvents, KEYS.beta, KEYS.purgeTiming];
 
   function renderSettingsData() {
     dataListSettingsEl.innerHTML = '';
@@ -2503,7 +2665,9 @@ input,select,textarea {font-size: 16px !important;}
         if (dow === 6) td.classList.add('sat');
         if (holi) td.classList.add('holi');
         const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
-        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}</div>`;
+        const dayEvs = getEventsForDate(dk);
+        const chipHTML = dayEvs.length ? `<div class="ev-chips">${dayEvs.slice(0, 2).map(e => `<span class="ev-chip">${escapeHtml(e.title)}</span>`).join('')}${dayEvs.length > 2 ? `<span class="ev-more">他${dayEvs.length - 2}件</span>` : ''}</div>` : '';
+        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}${chipHTML}</div>`;
         td.querySelector('.cell-inner').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
