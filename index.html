@@ -563,6 +563,28 @@ html.beta .modal-overlay:has(.event-input, .kyuuka-input, .sd-pw-input) { align-
 }
 html.kb-open .modal-overlay.open { inset: var(--vvt, 0px) 0 auto 0; height: var(--vvh, 100%); align-items: flex-start !important; padding: 8px 0; }
 html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16px) !important; overflow-y: auto; }
+@media print {
+  #printWrap .print-title { font-size: 1.25rem; margin-bottom: 4px; }
+  #printWrap .print-legend { gap: 18px; margin-bottom: 8px; }
+  #printWrap .print-legend-item { font-size: 0.75rem; color: #333; }
+  #printWrap thead th { font-size: 0.8rem; padding: 6px 2px; background: #f1f3f5; border: 1px solid #999; }
+  #printWrap tbody td { border: 1px solid #999; padding: 0; vertical-align: top; text-align: left; }
+  #printWrap tbody td.sun { background: #fff5f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printWrap tbody td.sat { background: #f3f8ff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printWrap.orient-portrait tbody tr { height: 38mm; }
+  #printWrap.orient-landscape tbody tr { height: 26mm; }
+  #printWrap .p-cell { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 2px; padding: 3px 4px; height: 100%; text-align: left; }
+  #printWrap .p-head { display: flex; align-items: baseline; gap: 4px; margin-bottom: 1px; }
+  #printWrap .p-day { font-size: 1.1rem; margin: 0; }
+  #printWrap .p-holiday-name { flex: 1; font-size: 0.55rem; text-align: left; line-height: 1.15; }
+  #printWrap .p-line { display: flex; align-items: center; gap: 4px; }
+  #printWrap .p-tag { width: 1.4em; text-align: center; font-size: 0.62rem; font-weight: 700; border-radius: 3px; padding: 1px 0; line-height: 1.3; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printWrap .p-tag.t朝 { color: #1d4ed8; background: #dbeafe; }
+  #printWrap .p-tag.t后 { color: #92400e; background: #fef3c7; }
+  #printWrap .p-tag.t夜 { color: #5b21b6; background: #ede9fe; }
+  #printWrap .p-teams { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; color: #111; }
+}
+.holiday-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; width: 100%; text-align: center; font-size: 0.5rem; line-height: 1.15; font-weight: 600; color: var(--休); margin-top: 2px; }
 </style>
 <script>try{if(localStorage.getItem("shiftBetaUI")==="on")document.documentElement.classList.add("beta")}catch(e){}</script>
 </head>
@@ -624,9 +646,9 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 </div>
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--休)"></div>休み</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 7:00 ～ 15:15</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 15:00 ～ 22:45</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 22:30 ～ 7:15</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--朝)"></div>朝勤 <span data-legend="朝"></span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--后)"></div>后勤 <span data-legend="后"></span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--夜)"></div>夜勤 <span data-legend="夜"></span></div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--有給)"></div>有給</div>
 </div>
 <div id="calendar" class="calendar"></div>
@@ -861,7 +883,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     <div class="settings-row">
       <div>
         <div class="settings-row-label">勤務時間を適用</div>
-        <div class="settings-row-sub">朝勤7:00～15:15などの時間を設定</div>
+        <div class="settings-row-sub">朝勤・后勤・夜勤の時間を設定</div>
       </div>
       <label class="toggle">
         <input type="checkbox" id="icsApplyShiftTime" checked />
@@ -1080,6 +1102,12 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 <script>
 (() => {
   const NEWS_DATA = [
+    {
+      date: "2026-10-06",
+      type: "update",
+      title: "11月から勤務時間変更",
+      body: "11月1日以降は 朝勤 7:00～15:00、后勤 14:45～22:30、夜勤 22:15～7:00 になります。"
+    },
     {
       date: "2026-10-03",
       type: "update",
@@ -2469,11 +2497,30 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 
   [openShareBtn, closeShareBtn, shareCopyBtn].forEach(btn => btn.addEventListener('pointerup', () => setTimeout(() => btn.blur(), 100)));
 
-  const SHIFT_TIMES = {
+  const SHIFT_TIME_CHANGE = new Date(2026, 10, 1);
+  const SHIFT_TIMES_OLD = {
     '朝': { startH: 7,  startM: 0,  endH: 15, endM: 15, overnight: false },
     '后': { startH: 15, startM: 0,  endH: 22, endM: 45, overnight: false },
     '夜': { startH: 22, startM: 30, endH: 7,  endM: 15, overnight: true  }
   };
+  const SHIFT_TIMES_NEW = {
+    '朝': { startH: 7,  startM: 0,  endH: 15, endM: 0,  overnight: false },
+    '后': { startH: 14, startM: 45, endH: 22, endM: 30, overnight: false },
+    '夜': { startH: 22, startM: 15, endH: 7,  endM: 0,  overnight: true  }
+  };
+  function shiftTimesOn(date) { return date >= SHIFT_TIME_CHANGE ? SHIFT_TIMES_NEW : SHIFT_TIMES_OLD; }
+  function fmtShiftTime(t, sep) { return `${t.startH}:${String(t.startM).padStart(2, '0')}${sep}${t.endH}:${String(t.endM).padStart(2, '0')}`; }
+  function updateLegend() {
+    const months = parseInt(monthsSelect.value, 10);
+    const first = new Date(startYear, startMonth, 1);
+    const last = new Date(startYear, startMonth + months, 0);
+    const a = shiftTimesOn(first), b = shiftTimesOn(last);
+    const crosses = a !== b;
+    document.querySelectorAll('[data-legend]').forEach(el => {
+      const k = el.dataset.legend;
+      el.textContent = fmtShiftTime(a[k], ' ～ ') + (crosses ? `（${SHIFT_TIME_CHANGE.getMonth() + 1}月〜 ${fmtShiftTime(b[k], ' ～ ')}）` : '');
+    });
+  }
   const SHIFT_LABELS = { '朝': '朝勤', '后': '后勤', '夜': '夜勤' };
 
   function pad2(n) { return String(n).padStart(2, '0'); }
@@ -2591,7 +2638,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
         const shift = getShift(team, cur);
         if (shift !== '休') {
           if (applyShiftTime) {
-            const t = SHIFT_TIMES[shift];
+            const t = shiftTimesOn(cur)[shift];
             events.push(buildTimedEvent(cur, t.startH, t.startM, t.endH, t.endM, t.overnight, `${SHIFT_LABELS[shift]}（${team}班）`, `shift-${team}-${dk}-${shift}@shiftcalendar`));
           } else {
             events.push(customTimedEvent(cur, ch, cm, customDuration, `${SHIFT_LABELS[shift]}（${team}班）`, `shift-${team}-${dk}-${shift}@shiftcalendar`));
@@ -2696,10 +2743,8 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
         const dotHTML = hasEvents(dk) ? '<div class="event-dot-row"><span class="event-dot"></span></div>' : '';
         const dayEvs = getEventsForDate(dk);
         const chipHTML = dayEvs.length ? `<div class="ev-chips">${dayEvs.slice(0, 2).map(e => `<span class="ev-chip">${escapeHtml(e.title)}</span>`).join('')}${dayEvs.length > 2 ? `<span class="ev-more">他${dayEvs.length - 2}件</span>` : ''}</div>` : '';
-        const holidayHTML = document.documentElement.classList.contains('beta') && holi
-          ? `<div class="holiday-name">${escapeHtml(holi)}</div>`
-          : '';
-        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}${chipHTML}${holidayHTML}</div>`;
+        const holidayHTML = holi ? `<div class="holiday-name">${escapeHtml(holi)}</div>` : '';
+        td.innerHTML = `<div class="cell-inner${hasEvents(dk)?' has-event':''}"><span class="day-num">${d}</span><span class="day-shift s${s}">${s}</span>${dotHTML}${holidayHTML}${chipHTML}</div>`;
         td.querySelector('.cell-inner').addEventListener('click', () => handleDateClick(dk));
         tr.appendChild(td);
       }
@@ -2748,6 +2793,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   function render() {
     container.innerHTML = '';
     updateMonthLabel();
+    updateLegend();
     const team = teamSelect.value;
     const months = parseInt(monthsSelect.value, 10);
     if (team === 'ALL') renderAllTeams(months);
@@ -2767,20 +2813,21 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
       const shiftsByType = { 朝:[], 后:[], 夜:[], 休:[] };
       for (const t of teams) shiftsByType[getShift(t, cur)].push(t);
       const badges = s => shiftsByType[s].map(t=>`<span class="p-badge b${s}">${t}</span>`).join('');
-      const shiftHTML = ['朝','后','夜'].map(s => { const b=badges(s); return b?`<div class="p-shift-row">${b}</div>`:''; }).join('');
-      const restHTML = badges('休') ? `<div class="p-shift-row">${badges('休')}</div>` : '';
-      tr += `<td><div class="p-cell"><span class="p-day ${dayClass}">${d}</span>${holiHTML}${shiftHTML}${restHTML}</div></td>`;
+      const tdClass = (dow === 0 || holi) ? 'sun' : dow === 6 ? 'sat' : '';
+      const lines = ['朝','后','夜'].map(sh => shiftsByType[sh].length
+        ? `<div class="p-line"><span class="p-tag t${sh}">${sh}</span><span class="p-teams">${shiftsByType[sh].join(' ')}</span></div>` : '').join('');
+      tr += `<td class="${tdClass}"><div class="p-cell"><div class="p-head"><span class="p-day ${dayClass}">${d}</span>${holiHTML}</div>${lines}</div></td>`;
       colIdx++;
     }
     while (colIdx < 7) { tr += '<td></td>'; colIdx++; }
     rows += `<tr>${tr}</tr>`;
+    const tm = shiftTimesOn(first);
     return `
       <div class="print-title">${year}年 ${month+1}月 全班シフト</div>
       <div class="print-legend">
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 7:00～15:15</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>后勤 15:00～22:45</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#8b5cf6"></div>夜勤 22:30～7:15</div>
-        <div class="print-legend-item"><div class="print-legend-dot" style="background:#ef4444"></div>休み</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#3b82f6"></div>朝勤 ${fmtShiftTime(tm["朝"], "～")}</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#f59e0b"></div>后勤 ${fmtShiftTime(tm["后"], "～")}</div>
+        <div class="print-legend-item"><div class="print-legend-dot" style="background:#8b5cf6"></div>夜勤 ${fmtShiftTime(tm["夜"], "～")}</div>
       </div>
       <table>
         <thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead>
