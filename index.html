@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" class="beta">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -586,7 +586,6 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 }
 .holiday-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; width: 100%; text-align: center; font-size: 0.5rem; line-height: 1.15; font-weight: 600; color: var(--休); margin-top: 2px; }
 </style>
-<script>try{if(localStorage.getItem("shiftBetaUI")==="on")document.documentElement.classList.add("beta")}catch(e){}</script>
 </head>
 <body>
 <header>
@@ -758,20 +757,6 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
             <span class="tt-thumb"></span>
           </button>
         </div>
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <div class="settings-section-title">βテスト</div>
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">新UI</div>
-          <div class="settings-row-sub">開発中の新しいデザインを試せます</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="betaUiToggle" />
-          <span class="toggle-slider"></span>
-        </label>
       </div>
     </div>
 
@@ -1250,8 +1235,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     autoPurge:   "shiftAutoPurge",
     purgeTiming: "shiftPurgeTiming",
     events:      "shiftEvents",
-    autoPurgeEvents: "shiftAutoPurgeEvents",
-    beta: "shiftBetaUI"
+    autoPurgeEvents: "shiftAutoPurgeEvents"
   };
 
   const KEY_LABELS = {
@@ -1263,8 +1247,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     [KEYS.autoPurge]:   "有給自動削除",
     [KEYS.purgeTiming]: "削除タイミング",
     [KEYS.events]:       "予定データ",
-    [KEYS.autoPurgeEvents]: "予定自動削除",
-    [KEYS.beta]: "βテスト（新UI）"
+    [KEYS.autoPurgeEvents]: "予定自動削除"
   };
 
   function dateKey(date) {
@@ -1337,14 +1320,6 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   const themeModeLabel  = document.getElementById('themeModeLabel');
   const autoPurgeToggle = document.getElementById('autoPurgeToggle');
   const autoPurgeEventsToggle = document.getElementById('autoPurgeEventsToggle');
-  const betaUiToggle = document.getElementById('betaUiToggle');
-  betaUiToggle.checked = localStorage.getItem(KEYS.beta) === "on";
-  document.documentElement.classList.toggle("beta", betaUiToggle.checked);
-  betaUiToggle.addEventListener('change', () => {
-    localStorage.setItem(KEYS.beta, betaUiToggle.checked ? "on" : "off");
-    document.documentElement.classList.toggle("beta", betaUiToggle.checked);
-    render();
-  });
   const purgeTimingRow  = document.getElementById('purgeTimingRow');
   const purgeTimingSelect=document.getElementById('purgeTimingSelect');
   const openDataBtn        = document.getElementById('openDataModal');
@@ -2067,7 +2042,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     document.getElementById('storageNote').textContent = `全体 ${(totalBytes/1024).toFixed(1)} KB / 上限 5 MB`;
   }
 
-  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.autoPurgeEvents, KEYS.beta, KEYS.purgeTiming];
+  const SETTINGS_KEYS = [KEYS.team, KEYS.months, KEYS.theme, KEYS.kyuuka, KEYS.newsRead, KEYS.autoPurge, KEYS.autoPurgeEvents, KEYS.purgeTiming];
 
   function renderSettingsData() {
     dataListSettingsEl.innerHTML = '';
