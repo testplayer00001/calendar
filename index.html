@@ -585,6 +585,8 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   #printWrap .p-teams { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; color: #111; }
 }
 .holiday-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; width: 100%; text-align: center; font-size: 0.5rem; line-height: 1.15; font-weight: 600; color: var(--休); margin-top: 2px; }
+#appToast { position: fixed; top: calc(var(--vvt, 0px) + env(safe-area-inset-top, 0px) + 12px); left: 50%; transform: translate(-50%, -20px); z-index: 10000; max-width: min(92vw, 420px); background: #D70015; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; line-height: 1.5; white-space: pre-line; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+#appToast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
 <body>
@@ -1089,7 +1091,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   const NEWS_DATA = [
     {
       date: "2026-10-06",
-      type: "update",
+      type: "notice",
       title: "11月から勤務時間変更",
       body: "11月1日以降は 朝勤 7:00～15:00、后勤 14:45～22:30、夜勤 22:15～7:00 になります。"
     },
@@ -1449,7 +1451,43 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   }
 
   function loadKyuuka() { try { return JSON.parse(localStorage.getItem(KEYS.kyuuka) || "[]"); } catch { return []; } }
-  function saveKyuuka(arr) { localStorage.setItem(KEYS.kyuuka, JSON.stringify(arr)); }
+  const STORAGE_LIMIT = 5 * 1024 * 1024;
+  function storageBytes(overrides) {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (overrides && Object.prototype.hasOwnProperty.call(overrides, k)) continue;
+      total += (k.length + (localStorage.getItem(k) || '').length) * 2;
+    }
+    if (overrides) Object.keys(overrides).forEach(k => { total += (k.length + overrides[k].length) * 2; });
+    return total;
+  }
+  function fitsStorage(overrides) {
+    const next = storageBytes(overrides);
+    return next <= STORAGE_LIMIT || next <= storageBytes();
+  }
+  function showToast(msg) {
+    let t = document.getElementById('appToast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'appToast';
+      t.setAttribute('role', 'alert');
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => t.classList.remove('show'), 6000);
+  }
+  function storageFullAlert() {
+    showToast('保存できません。\n保存データが上限の5MBを超えてしまいます。\n不要な予定や有給を削除してください。');
+  }
+  function safeSetItem(key, value) {
+    if (!fitsStorage({ [key]: value })) { storageFullAlert(); return false; }
+    try { localStorage.setItem(key, value); return true; }
+    catch { storageFullAlert(); return false; }
+  }
+  function saveKyuuka(arr) { return safeSetItem(KEYS.kyuuka, JSON.stringify(arr)); }
 
   function purgePastKyuuka() {
     if (localStorage.getItem(KEYS.autoPurge) === "off") return;
@@ -1494,7 +1532,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     const val = kyuukaDateInput.value;
     if (!val) return;
     const arr = loadKyuuka();
-    if (!arr.includes(val)) { arr.push(val); saveKyuuka(arr); }
+    if (!arr.includes(val)) { arr.push(val); if (!saveKyuuka(arr)) return; }
     kyuukaDateInput.value = '';
     renderKyuukaList(); render();
   });
@@ -1502,7 +1540,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 
 
   function loadEvents() { try { return JSON.parse(localStorage.getItem(KEYS.events) || "{}"); } catch { return {}; } }
-  function saveEvents(obj) { localStorage.setItem(KEYS.events, JSON.stringify(obj)); }
+  function saveEvents(obj) { return safeSetItem(KEYS.events, JSON.stringify(obj)); }
   function getEventsForDate(dk) {
     const all = loadEvents();
     return (all[dk] || []).slice().sort((a,b) => (a.start || '').localeCompare(b.start || ''));
@@ -1551,7 +1589,7 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
       end: eventEndTimeInput.value || '',
       memo: eventMemoInput.value.trim()
     });
-    saveEvents(all);
+    if (!saveEvents(all)) return;
     closeModal(eventAddModal);
     render();
     if (eventListModal.classList.contains('open')) renderEventList(currentEventDate);
@@ -1911,14 +1949,11 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   document.getElementById('impAcceptBtn').addEventListener('click', () => {
     const imp = pendingImport;
     if (!imp) return;
-    if (imp.team && document.getElementById('impTeamCheck').checked) {
-      teamSelect.value = imp.team;
-      localStorage.setItem(KEYS.team, imp.team);
-    }
+    const pending = {};
     if (imp.kyuuka.length) {
       const set = new Set(loadKyuuka());
       imp.kyuuka.forEach(d => set.add(d));
-      saveKyuuka([...set]);
+      pending[KEYS.kyuuka] = JSON.stringify([...set]);
     }
     if (imp.events.length) {
       const all = loadEvents();
@@ -1930,7 +1965,14 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
         all[e.dk].push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`, title: e.title, start: e.start, end: e.end, memo: e.memo });
         sigs.add(evSig(e.dk, e));
       });
-      saveEvents(all);
+      pending[KEYS.events] = JSON.stringify(all);
+    }
+    if (!fitsStorage(pending)) { storageFullAlert(); return; }
+    try { Object.keys(pending).forEach(k => localStorage.setItem(k, pending[k])); }
+    catch { storageFullAlert(); return; }
+    if (imp.team && document.getElementById('impTeamCheck').checked) {
+      teamSelect.value = imp.team;
+      localStorage.setItem(KEYS.team, imp.team);
     }
     pendingImport = null;
     clearShareParam();
@@ -2033,9 +2075,10 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
     }
     const pct = Math.min((totalBytes / MAX_BYTES) * 100, 100);
     const appKB = (appBytes / 1024).toFixed(2);
-    const remainMB = ((MAX_BYTES - totalBytes) / 1024 / 1024).toFixed(2);
+    const over = totalBytes > MAX_BYTES;
+    const remainMB = (Math.max(0, MAX_BYTES - totalBytes) / 1024 / 1024).toFixed(2);
     document.getElementById('storageUsed').textContent = `${appKB} KB`;
-    document.getElementById('storageRemain').textContent = `残り ${remainMB} MB`;
+    document.getElementById('storageRemain').textContent = over ? `上限超過 +${((totalBytes - MAX_BYTES) / 1024 / 1024).toFixed(2)} MB` : `残り ${remainMB} MB`;
     const bar = document.getElementById('storageBar');
     bar.style.width = pct + '%';
     bar.className = 'storage-bar' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
