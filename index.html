@@ -587,6 +587,13 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
 .holiday-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; word-break: break-all; width: 100%; text-align: center; font-size: 0.5rem; line-height: 1.15; font-weight: 600; color: var(--休); margin-top: 2px; }
 #appToast { position: fixed; top: calc(var(--vvt, 0px) + env(safe-area-inset-top, 0px) + 12px); left: 50%; transform: translate(-50%, -20px); z-index: 10000; max-width: min(92vw, 420px); background: #D70015; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; line-height: 1.5; white-space: pre-line; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
 #appToast.show { opacity: 1; transform: translate(-50%, 0); }
+.modal-framed { gap: 0; padding: 0; overflow: hidden; }
+html.kb-open .modal-overlay.open .modal.modal-framed { overflow: hidden; }
+.modal-framed > .news-modal-header { flex: none; }
+.modal-body { padding: 16px 28px 24px; display: flex; flex-direction: column; gap: 20px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -2915,6 +2922,40 @@ html.kb-open .modal-overlay.open .modal { max-height: calc(var(--vvh, 100%) - 16
   vv.addEventListener('scroll', fit);
   document.addEventListener('focusin', () => setTimeout(fit, 50));
   document.addEventListener('focusout', () => setTimeout(fit, 150));
+})();
+
+(function () {
+  document.querySelectorAll('#settingsModal').forEach(overlay => {
+    const modal = overlay.querySelector('.modal');
+    if (!modal || modal.classList.contains('news-modal') || modal.classList.contains('spec-modal')) return;
+    const title = modal.querySelector(':scope > h2');
+    if (!title) return;
+    const head = document.createElement('div');
+    head.className = 'news-modal-header';
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'news-close-btn';
+    x.setAttribute('aria-label', '閉じる');
+    x.textContent = '✕';
+    x.addEventListener('click', () => {
+      const closer = modal.querySelector('[id^="close"][id$="Modal"], #pwCancelBtn, #impRejectBtn');
+      if (closer) closer.click();
+      else overlay.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+    while (title.nextSibling) body.appendChild(title.nextSibling);
+    modal.classList.add('modal-framed');
+    modal.insertBefore(head, title);
+    head.appendChild(title);
+    head.appendChild(x);
+    modal.appendChild(body);
+    const bottom = modal.querySelector('#closeSettingsModal');
+    if (bottom) {
+      const wrap = bottom.parentElement;
+      (wrap.children.length === 1 ? wrap : bottom).style.display = 'none';
+    }
+  });
 })();
 </script>
 <footer class="site-footer"><small>Created by S │ THX</small></footer>
